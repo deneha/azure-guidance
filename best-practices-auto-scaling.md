@@ -10,7 +10,7 @@
 
 <tags
    ms.service="required"
-   ms.devlang="may be required"
+   ms.devlang="na"
    ms.topic="article"
    ms.tgt_pltfrm="may be required"
    ms.workload="required"

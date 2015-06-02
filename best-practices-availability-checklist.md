@@ -10,7 +10,7 @@
 
 <tags
    ms.service="required"
-   ms.devlang="may be required"
+   ms.devlang="na"
    ms.topic="article"
    ms.tgt_pltfrm="may be required"
    ms.workload="required"
@@ -38,7 +38,7 @@
 - **Apply configuration changes without recycling** the instance when possible. In many cases, the configuration settings for an Azure application or service can be changed without requiring the role to be restarted. Role expose events that can be handled to detect configuration changes and apply them to components within the application. However, some changes to the core platform settings will require a role to be restarted. When building components and services, maximize availability and minimize downtime by designing them to accept changes to configuration settings without requiring the application as a whole to be restarted.
 - **Use upgrade domains for zero downtime during updates.** Azure compute units such as web and worker roles are allocated to upgrade domains. Upgrade domains group role instances together so that, when a rolling update takes place, each role in the upgrade domain is stopped, updated, and restarted in turn in order to minimize the impact on availability of the application. You can specify how many upgrade domains should be created for a service when the service is deployed.
 
-	> **Note:** Roles are also distributed across fault domains, each of which is reasonably independent from other fault domains in terms of server rack, power, and cooling provision, in order to minimize the chance of a failure affecting all role instances. This distribution occurs automatically and you cannot control it.
+	> [AZURE.NOTE] Roles are also distributed across fault domains, each of which is reasonably independent from other fault domains in terms of server rack, power, and cooling provision, in order to minimize the chance of a failure affecting all role instances. This distribution occurs automatically and you cannot control it.
 
 - **Configure availability sets for Azure virtual machines.** Placing two or more virtual machines in the same availability set guarantees that these virtual machines will not be deployed to the same fault domain. To maximize availability, you should create multiple instances of each critical virtual machine used by your system and place these instances in the same availability set. If you are running multiple virtual machines that serve different purposes, create an availability set for each virtual machine and add instances of each virtual machine to each availability set. For example, if you have created separate virtual machines to act as a web server and a reporting server, create an availability set for the web server and another availability set for the reporting server. Add instances of the web server virtual machine to the web server availability set, and add instances of the reporting server virtual machine to the reporting server availability set.
 # Data management

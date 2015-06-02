@@ -1,6 +1,6 @@
 <properties
    pageTitle="Scalability checklist | Microsoft Azure"
-   description="Scalability checklist guidance for design concerns."
+   description="Scalability checklist guidance for design concerns for Azure Autoscaling."
    services="service-name"
    documentationCenter="dev-center-name"
    authors="dragon119"
@@ -9,7 +9,7 @@
    tags=""/>
 
 <tags
-   ms.service="required"
+   ms.service="multiple"
    ms.devlang="may be required"
    ms.topic="article"
    ms.tgt_pltfrm="may be required"
@@ -56,7 +56,7 @@
 - **Minimize the time that connections and resources are in use**. Maintain connections and resources only for as long as you need to use them. For example, open connections as late as possible and allow them to be returned to the connection pool as soon as possible. Acquire resources as late as possible and dispose of them as soon as possible.
 - **Minimize the number of connections required**. Service connections absorb resources. Where possible, limit the number that are required and ensure that existing connections are reused whenever possible. For example, after performing authentication, use impersonation where appropriate to run code as a specific identity. This can help to make best use of the connection pool by reusing connections.  
 
-	> **Note:** APIs for some services automatically reuse connections provided service-specific guidelines are followed. It is important that you understand the conditions that enable connection reuse for each service that your application uses.
+	> [AZURE.NOTE]:** APIs for some services automatically reuse connections provided service-specific guidelines are followed. It is important that you understand the conditions that enable connection reuse for each service that your application uses.
 - **Send requests in batches to optimize network use**. For example, send and read messages in batches when accessing a queue, and perform multiple reads or writes as a batch when accessing storage or a cache. This can help to maximize efficiency of the services and the stores by reducing the number of calls across the network.
 - **Avoid a requirement to store server-side session state** where possible. Server-side session state management typically requires client affinity (routing each request to the same server instance), which affects the ability of the system to scale. Ideally, you should design clients to be stateless with respect to the servers that it uses. However, if the application must maintain session state, store sensitive data or large volumes of per-client data in a distributed server-side cache that all instances of the application can access.
 - **Optimize table storage schemas**. When using table stores such as Azure table storage that require the table and column names to be passed and processed with every query, consider using shorter names to reduce this overhead. However, do not sacrifice readability or manageability though using un-intuitively compact names.

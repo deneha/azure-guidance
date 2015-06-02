@@ -1,6 +1,6 @@
 <properties
    pageTitle="Monitoring and diagnostics guidance | Microsoft Azure"
-   description="Description of article"
+   description="Best practices for monitoring distributed applications in the cloud."
    services="service-name"
    documentationCenter="dev-center-name"
    authors="dragon119"
@@ -35,7 +35,7 @@ Monitoring enables you to gain an insight into how well a system is functioning,
 - Tracking issues that occur, from initial report through to analysis of possible causes, rectification, consequent software updates, and deployment.
 - Tracing operations and debugging software releases.
 
-> **Note**: This list is not intended to be comprehensive. This document focusses on these scenarios as the most common situations for performing monitoring, but there may well be others that are less common or specific to your own environment.
+> [AZURE.NOTE] This list is not intended to be comprehensive. This document focusses on these scenarios as the most common situations for performing monitoring, but there may well be others that are less common or specific to your own environment.
 
 The following sections describe these scenarios in more detail. The information for each scenario is discussed in the following format:
 
@@ -106,7 +106,7 @@ As the system is placed under more and more stress as the volume of users increa
 
 System performance is dependent on a number of factors. Each factor is typically measured by using Key Performance Indicators (KPIs), such as the number of database transactions per second, or the volume of network requests that are successfully serviced in a given timeframe. Some of these KPIs may be available as specific performance measures, while others may be derived from a combination of metrics.
 
-> **Note**: Determining poor or good performance requires that you understand the level of performance at which the system should be capable of running. This requires observing the system while it is functioning under a typical load and capturing the data for each KPI over a period of time. This might involve running the system under a simulated load in a test environment and gathering the appropriate data before deploying the system to a production environment.
+> [AZURE.NOTE] Determining poor or good performance requires that you understand the level of performance at which the system should be capable of running. This requires observing the system while it is functioning under a typical load and capturing the data for each KPI over a period of time. This might involve running the system under a simulated load in a test environment and gathering the appropriate data before deploying the system to a production environment.
 
 > You should also ensure that monitoring for performance purposes does not become an unwarranted burden on the system. You may be able to dynamically adjust the level of detail concerning the data that the performance monitoring process gathers.
 
@@ -191,7 +191,7 @@ A feature of security monitoring is the variety of sources from which the data a
 ## SLA monitoring
 Many commercial systems that support paying customers make guarantees about the performance of the system in the form of SLAs. Essentially, SLAs state that the system can handle a defined volume of work within an agreed timeframe and without losing critical information. SLA monitoring is concerned with ensuring that the system can meet measurable SLAs.
 
-> **Note**: SLA monitoring is closely related to performance monitoring, but whereas performance monitoring is concerned with ensuring that the system functions _optimally_, SLA monitoring is governed by a contractual obligation that defines what _optimally_ actually means.
+> [AZURE.NOTE] SLA monitoring is closely related to performance monitoring, but whereas performance monitoring is concerned with ensuring that the system functions _optimally_, SLA monitoring is governed by a contractual obligation that defines what _optimally_ actually means.
 
 SLAs are frequently defined in terms of:
 
@@ -199,7 +199,7 @@ SLAs are frequently defined in terms of:
 - Operational throughput. This aspect is often expressed as one or more key high-water marks, such as guaranteeing that the system will be able to support up to 100,000 concurrent user requests or handle 10,000 concurrent business transactions.
 - Operational response time. The system may also make guarantees concerning the rate at which requests are processed, such as 99% of all business transactions will complete within 2 seconds, and no single transaction will take longer than 10 seconds.
 
-> **Note**: Some contracts for commercial systems might also include SLAs concerning customer support, such as all help desk requests will elicit a response within 5 minutes, and that 99% of all problems should be fully addressed within 1 working day. Effective [issue tracking](#issue-tracking) (described later in this section) is key to meeting SLAs such as these.
+> [AZURE.NOTE] Some contracts for commercial systems might also include SLAs concerning customer support, such as all help desk requests will elicit a response within 5 minutes, and that 99% of all problems should be fully addressed within 1 working day. Effective [issue tracking](#issue-tracking) (described later in this section) is key to meeting SLAs such as these.
 
 ### Requirements for SLA monitoring
 At the highest level, an operator should be able to determine at a glance whether the system is meeting the agreed SLAs or not, and if not then to drill down and examine the underlying factors to determine the reasons for substandard performance.
@@ -215,7 +215,7 @@ All of these indicators should be capable of being filtered by a specified perio
 
 A cloud application will likely comprise a number of subsystems and components. An operator should be able to select a high-level indicator and see how it is composed from the health of the underlying elements. For example, if the uptime of the overall system falls below an acceptable value, an operator should be able to zoom in and determine which element(s) are contributing to this failure.
 
-> **Note**: System uptime needs to be defined carefully. In a system that uses redundancy to ensure maximum availability, individual instances of elements may fail, but the system can remain functional. System uptime as presented by health monitoring should indicate the aggregate uptime of each element and not necessarily whether the system has actually halted. Additionally, failures may be isolated, so even if a specific system is unavailable the remainder of the system might remain available, although with decreased functionality (in an ecommerce system, a failure in the system might prevent a customer from placing orders but the customer might still be able to browse the product catalog.)
+> [AZURE.NOTE] System uptime needs to be defined carefully. In a system that uses redundancy to ensure maximum availability, individual instances of elements may fail, but the system can remain functional. System uptime as presented by health monitoring should indicate the aggregate uptime of each element and not necessarily whether the system has actually halted. Additionally, failures may be isolated, so even if a specific system is unavailable the remainder of the system might remain available, although with decreased functionality (in an ecommerce system, a failure in the system might prevent a customer from placing orders but the customer might still be able to browse the product catalog.)
 
 For alerting purposes, the system should be able to raise an event if any of the high-level indicators exceed a specified threshold. The lower-level details of the various factors that comprise the high-level indicator should be available as contextual data to the alerting system.
 
@@ -313,7 +313,7 @@ If a user reports a recognized issue with a known solution in the issue tracking
 ## Tracing operations and debugging software releases
 When a user reports an issue, the user is often only aware of the immediate impact that it has on his or her operations, and the user can only report the results of their own experience back to an operator responsible for maintaining the system. These experiences are usually just a visible symptom of one or more fundamental problems. In many cases, an analyst will need to dig through the chronology of the underlying operations to establish the root cause of the problem (this process is referred to as _Root Cause Analysis_).
 
-> **Note**: Root Cause Analysis may uncover inefficiencies in the design of an application. In these situations, it may be possible to rework the affected elements and deploy them as part of a subsequent release. This process requires careful control, and the updated components should be monitored closely.
+> [AZURE.NOTE] Root Cause Analysis may uncover inefficiencies in the design of an application. In these situations, it may be possible to rework the affected elements and deploy them as part of a subsequent release. This process requires careful control, and the updated components should be monitored closely.
 
 ### Requirements for tracing and debugging
 For tracing unexpected events and other problems, it is vital that the monitoring data provides enough information not just about issues that occur at the high level, but also includes sufficient detail to enable an analyst to trace back to the origins of these issues and reconstruct the sequence of events that occurred. This information must be sufficient to enable an analyst to diagnose the root cause of any problems so that a developer can make the necessary modifications to prevent them from recurring.
@@ -344,7 +344,7 @@ The information used by the monitoring process can come from several sources, as
 
 Many applications make use of libraries and frameworks to perform common tasks such as accessing a data store or communicating over a network. These frameworks may be configurable to output their own trace messages and raw diagnostic information such as transaction rates, data transmission successes and failures, and so on.
 
-> **Note**: Many modern frameworks automatically publish performance and trace events, and capturing this information is simply a matter of providing a means to retrieve and store it where it can be processed and analyzed.
+> [AZURE.NOTE] Many modern frameworks automatically publish performance and trace events, and capturing this information is simply a matter of providing a means to retrieve and store it where it can be processed and analyzed.
 
 The operating system on which the application is running can be a source of low-level system-wide information, such as performance counters indicating I/O rates, memory utilization, and CPU usage. Operating system errors (such as the failure to open a file correctly) may also be reported.
 
@@ -364,11 +364,11 @@ Additionally, your code and/or the underlying infrastructure may raise events at
 
 - **Real User Monitoring**. This approach records the interactions between a user and the application and observes the flow of each request and response. This information can have a two-fold purpose: it can be used for metering usage by each user, and it can be used to determine whether users are receiving a suitable quality of service (for example, fast response times, low latency, and minimal errors occurring). The data captured can be used to identify areas of concern where failures most frequently occur, and elements where the system slows down, possibly due to hotspots in the application or some other form of bottleneck. If this approach is carefully implemented, it may be possible to reconstruct users' flows through the application for debugging and testing purposes.
 
-	> **Important**: The data captured by monitoring real users should be considered highly sensitive as it may include confidential material. If the captured data is saved it must be stored securely. If the data is being used for performance monitoring or debugging purposes, all personally identifiable information should be stripped out first.
+	> [AZURE.IMPORTANT] The data captured by monitoring real users should be considered highly sensitive as it may include confidential material. If the captured data is saved it must be stored securely. If the data is being used for performance monitoring or debugging purposes, all personally identifiable information should be stripped out first.
 
 - **Synthetic User Monitoring**. In this approach, you write your own test client that simulates a user and performs a configurable but typical series of operations. You can track the performance of the test client to help determine the state of the system. You can also use multiple instances of the test client as part of a load-testing operation to establish how the system responds under stress, and what sort of monitoring output is generated under these conditions.
 
-	> **Note**: You can implement real and synthetic user monitoring by including code that traces and times the execution of method calls and other critical parts of an application.
+	> [AZURE.NOTE] You can implement real and synthetic user monitoring by including code that traces and times the execution of method calls and other critical parts of an application.
 
 - **Profiling**. This approach is primarily targeted at monitoring and improving application performance. Rather than operating at the functional level employed by real and synthetic user monitoring, it captures lower-level information as the application runs. Profiling can be implemented by periodic sampling of the execution state of an application (determining which piece of code that the application is running at a given point in time), or by using instrumentation that inserts probes into the code at important junctures (such as the start and end of a method call) and records which methods were invoked, at what time, and how long each call took. This data can then be analyzed to determine which parts of the application could cause performance problems.
 
@@ -384,7 +384,7 @@ The instrumentation data will typically comprise information written to trace lo
 
 - The contents of a trace log can be the result of textual data written by the application, binary data created as the result of a trace event (if the application is using Event Tracing for Windows – ETW), or they can be generated from system logs that record events arising from parts of the infrastructure, such as a web server. Textual log messages are often designed to be human-readable, but they should also be written in a format that enables them to be easily parsed by an automated system. You should also categorize logs; don't write all trace data to a single log but use separate logs to record the trace output from different operational aspects of the system. This enables you to quickly filter log messages by reading from the appropriate log rather than having to process a single lengthy file. Never write information that has different security requirements (such as audit information and debugging data) to the same log.
 
-	> **Note**: A log may be implemented as a file on the file system, or it could be held in some other format such as a blob in blob storage. Log information might also be held in more structured storage, such as rows in a table.
+	> [AZURE.NOTE] A log may be implemented as a file on the file system, or it could be held in some other format such as a blob in blob storage. Log information might also be held in more structured storage, such as rows in a table.
 
 - Metrics will generally simply be a measure or count of some aspect or resource in the system at a specific time with one or more associated tags or dimensions (sometimes referred to as a _sample_). A single instance of a metric is usually not useful in isolation; instead metrics have to be captured over time. The key issue to consider is which metrics should you record and how frequently. Generating data for metrics too often can impose a significant additional load on the system, whereas capturing metrics infrequently may cause you to miss the circumstances leading to a significant event. The considerations will vary from metric to metric. For example, CPU utilization on a server may vary significantly from second to second, but high utilization only becomes an issue if it is long-lived over a number of minutes.
 
@@ -394,7 +394,7 @@ You can easily monitor individual system-level performance counters, capture met
 
 All monitoring data should be time-stamped in the same way. For consistency, record all dates and times by using Coordinated Universal Time. This will help to enable you to more easily trace sequences of events.
 
-> **Note**: Computers operating in different timezones and networks might not be synchronized, so you should not depend on using timestamps alone for correlating instrumentation data that spans multiple machines.
+> [AZURE.NOTE] Computers operating in different timezones and networks might not be synchronized, so you should not depend on using timestamps alone for correlating instrumentation data that spans multiple machines.
 
 ### What information should the instrumentation data include?
 Consider the following points when deciding which instrumentation data you need to collect:
@@ -471,7 +471,7 @@ One approach to implementing the pull model is to use monitoring agents running 
 _Figure 3.
 Using a monitoring agent to pull information and write to shared storage_
 
-> **Note**: Using a monitoring agent is ideally suited to capturing instrumentation data that is naturally pulled from a data source, such as information from SQL Server Management Views, or the length of an Azure Service Bus Queue.
+> [AZURE.NOTE] Using a monitoring agent is ideally suited to capturing instrumentation data that is naturally pulled from a data source, such as information from SQL Server Management Views, or the length of an Azure Service Bus Queue.
 
 For information about configuring and using Azure Diagnostics, visit the [Collect Logging Data by Using Azure Diagnostics](https://msdn.microsoft.com/library/azure/gg433048.aspx) page on the Microsoft website.
 
@@ -565,7 +565,7 @@ Note that for a dashboard system to work effectively, it must have the raw data 
 
 A good dashboard does not only display information, it provides a means to allow an analyst to pose ad-hoc questions about that information. Some systems provide management tools that an operator can use to perform these tasks and explore the underlying data. Alternatively, depending on the repository used to hold this information it may be possible to query this data directly, or import it into tools such as Microsoft Excel for further analysis and reporting.
 
-> **Note**: You should restrict access to dashboards to authorized personnel; this information may be commercially sensitive. You should also protect the underlying data presented by the dashboard to prevent users from changing it.
+> [AZURE.NOTE] You should restrict access to dashboards to authorized personnel; this information may be commercially sensitive. You should also protect the underlying data presented by the dashboard to prevent users from changing it.
 
 ### Raising alerts
 Alerting is the process of analyzing the monitoring and instrumentation data and generating a notification if a significant event is detected.
