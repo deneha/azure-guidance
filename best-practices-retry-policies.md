@@ -1,8 +1,27 @@
-<p class="lead">As more components begin to communicate, transient failures become 
-more important to smartly handle. The Transient Fault Handling work handled by the 
+<properties
+   pageTitle="NuGet Packages | Microsoft Azure"
+   description="Guidance on NuGet Packages for general retry policy work."
+   services="service-name"
+   documentationCenter="dev-center-name"
+   authors="dragon119"
+   manager="masimms"
+   editor=""
+   tags=""/>
+
+<tags
+   ms.service="required"
+   ms.devlang="may be required"
+   ms.topic="article"
+   ms.tgt_pltfrm="may be required"
+   ms.workload="required"
+   ms.date="04/09/2015"
+   ms.author="masashin"/>
+
+<p class="lead">As more components begin to communicate, transient failures become
+more important to smartly handle. The Transient Fault Handling work handled by the
 retry policies NuGet package can help handle retries within a single instance.</p>
 
-> This document was based on a draft as a proof of concept. It is not the actual 
+> This document was based on a draft as a proof of concept. It is not the actual
   reviewed guidance.
 
 # NuGet Packages
@@ -46,10 +65,10 @@ Configuration file:
 
 ```xml
 <RetryPolicyConfiguration defaultRetryStrategy="Fixed Interval Retry Strategy">
-    <linearInterval name="Fixed Interval Retry Strategy" 
+    <linearInterval name="Fixed Interval Retry Strategy"
 	retryInterval="00:00:01" maxRetryCount="10" />
     <exponentialBackoff name="Backoff Retry Strategy" minBackoff="00:00:01"
-        maxBackoff="00:00:30" deltaBackoff="00:00:10" maxRetryCount="10" 
+        maxBackoff="00:00:30" deltaBackoff="00:00:10" maxRetryCount="10"
         fastFirst="false"/>
 </RetryPolicyConfiguration>
 ```
@@ -58,7 +77,7 @@ Configuration file:
 
 ## Exponential
 
-Used for spacing out repeated attempts of service invocations exponentially to avoid service throttling. 
+Used for spacing out repeated attempts of service invocations exponentially to avoid service throttling.
 
 __Approach:__
 
@@ -80,7 +99,7 @@ __Implementation Logic:__
 if(!ExponentialRetry.FastFirst){
     Random r = new Random();
     double increment = (Math.Pow(2, currentRetryCount) - 1) * r.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8), (int)(this.deltaBackoff.TotalMilliseconds * 1.2));
-    retryInterval = (increment < 0) ? ExponentialRetry.MaxBackoff :                   
+    retryInterval = (increment < 0) ? ExponentialRetry.MaxBackoff :
     TimeSpan.FromMilliseconds(Math.Min(ExponentialRetry.MaxBackoff.TotalMilliseconds, ExponentialRetry.MinBackoff.TotalMilliseconds + increment));
 } else {
     retryInterval = TimeSpan.Zero;
@@ -115,7 +134,7 @@ if(!ExponentialRetry.FastFirst) {
 }
 ```
 
-## Adaptive 
+## Adaptive
 
 Used for spacing out repeated attempts of service invocations based on error code / metadata passed by service in response header.
 
@@ -145,7 +164,7 @@ public interface IRetryPolicy
 {
     /// <summary>
     /// Generates a new retry policy for the current request attempt.
-    /// </summary>       
+    /// </summary>
     IRetryPolicy CreateInstance();
 
     /// <summary>
@@ -161,12 +180,12 @@ public interface IRetryPolicy
 
 # Telemetry
 
-Log retries as ETW events using an EventSource. Here are the fields that should be logged for every retry attempt 
+Log retries as ETW events using an EventSource. Here are the fields that should be logged for every retry attempt
 
 Parameter            | Description
 -------------------- | -------------------------------------------------------
 requestId | ""
-policyType | "RetryExponential" 
+policyType | "RetryExponential"
 operation | "Get:https://retry-guidance-tests.servicebus.windows.net/TestQueue/?api-version=2014-05"
 operationStartTime | "9/5/2014 10:00:13 PM"
 operationEndTime | "9/5/2014 10:00:14 PM"
@@ -174,5 +193,3 @@ iteration | "0"
 iterationSleep | "00:00:00.1000000"
 lastExceptionType | "Microsoft.ServiceBus.Messaging.MessagingCommunicationException"
 exceptionMessage | "The remote name could not be resolved: 'retry-guidance-tests.servicebus.windows.net'.TrackingId:6a26f99c-dc6d-422e-8565-f89fdd0d4fe3,TimeStamp:9/5/2014 10:00:13 PM"
-
-

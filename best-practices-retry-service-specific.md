@@ -1,14 +1,33 @@
+<properties
+   pageTitle="Retry service specific guidance | Microsoft Azure"
+   description="Description of article"
+   services="service-name"
+   documentationCenter="dev-center-name"
+   authors="dragon119"
+   manager="masimms"
+   editor=""
+   tags=""/>
+
+<tags
+   ms.service="required"
+   ms.devlang="may be required"
+   ms.topic="article"
+   ms.tgt_pltfrm="may be required"
+   ms.workload="required"
+   ms.date="04/28/2015"
+   ms.author="masashin"/>
+
 ![](http://pnp.azurewebsites.net/images/pnp-logo.png)
 
 # Retry service specific guidance
 
-# Overview 
+# Overview
 
 Most Azure services and client SDKs include a retry mechanism. However, these differ because each service has different characteristics and requirements, and so each retry mechanism is tuned to a specific service. This guide summarizes the retry mechanism features for the majority of Azure services, and includes information to help you use, adapt, or extend the retry mechanism for that service.
 
-For general guidance on handling transient faults, and retrying connections and operations against services and resources, see [Retry guidance](https://github.com/mspnp/azure-guidance/blob/master/Retry-General.md).
+For general guidance on handling transient faults, and retrying connections and operations against services and resources, see [Retry guidance](best-practices-retry-general.md).
 
-The following table summarizes the retry features for the Azure services described in this guidance. 
+The following table summarizes the retry features for the Azure services described in this guidance.
 
 | **Service**                           | **Retry capabilities**                  | **Policy configuration**     | **Scope**                                        | **Telemetry features** |
 |---------------------------------------|-----------------------------------------|------------------------------|--------------------------------------------------|------------------------
@@ -32,7 +51,7 @@ Azure storage services include table and blob storage, files, and storage queues
 
 Retries occur at the individual REST operation level and are an integral part of the client API implementation. The client storage SDK uses classes that implement the [IExtendedRetryPolicy Interface](http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.retrypolicies.iextendedretrypolicy.aspx).
 
-There are different implementations of the interface. Storage clients can choose from policies specifically designed for accessing tables, blobs, and queues. Each implementation uses a different retry strategy that essentially defines the retry interval and other details. 
+There are different implementations of the interface. Storage clients can choose from policies specifically designed for accessing tables, blobs, and queues. Each implementation uses a different retry strategy that essentially defines the retry interval and other details.
 
 The built-in classes provide support for linear (constant delay) and exponential with randomization retry intervals. There is also a no retry policy for use when another process is handling retries at a higher level. However, you can implement your own retry classes if you have specific requirements not provided by the built-in classes.
 
@@ -54,14 +73,14 @@ TableRequestOptions interactiveRequestOption = new TableRequestOptions()
 };
 ```
 
-The request options instance can then be set on the client, and all operations with the client will use the specified request options. 
+The request options instance can then be set on the client, and all operations with the client will use the specified request options.
 
 ```csharp
 client.DefaultRequestOptions = interactiveRequestOption;
 var stats = await client.GetServiceStatsAsync();
 ```
 
-You can override the client request options by passing a populated instance of the request options class as a parameter to operation methods. 
+You can override the client request options by passing a populated instance of the request options class as a parameter to operation methods.
 
 ```csharp
 var stats = await client.GetServiceStatsAsync(interactiveRequestOption, operationContext: null);
@@ -82,7 +101,7 @@ You use an **OperationContext** instance to specify the code to execute when a r
 	};
 	var stats = await client.GetServiceStatsAsync(null, context);
 
-In addition to indicating whether a failure is suitable for retry, the extended retry policies return a **RetryContext** object that indicates the number of retries, the results of the last request, whether the next retry will happen in the primary or secondary location (see table below for details). The properties of the **RetryContext** object can be used to decide if and when to attempt a retry. For more details, see [IExtendedRetryPolicy.Evaluate Method](http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.retrypolicies.iextendedretrypolicy.evaluate.aspx). 
+In addition to indicating whether a failure is suitable for retry, the extended retry policies return a **RetryContext** object that indicates the number of retries, the results of the last request, whether the next retry will happen in the primary or secondary location (see table below for details). The properties of the **RetryContext** object can be used to decide if and when to attempt a retry. For more details, see [IExtendedRetryPolicy.Evaluate Method](http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.retrypolicies.iextendedretrypolicy.evaluate.aspx).
 
 The following table shows the default settings for the built-in retry policies.
 
@@ -95,7 +114,7 @@ The following table shows the default settings for the built-in retry policies.
 ## Retry usage guidance
 Consider the following guidelines when accessing Azure storage services using the storage client API:
 
-* Use the built-in retry policies from the Microsoft.WindowsAzure.Storage.RetryPolicies namespace where they are appropriate for your requirements. In most cases, these policies will be sufficient. 
+* Use the built-in retry policies from the Microsoft.WindowsAzure.Storage.RetryPolicies namespace where they are appropriate for your requirements. In most cases, these policies will be sufficient.
 * Use the **ExponentialRetry** policy in batch operations, background tasks, or non-interactive scenarios. In these scenarios, you can typically allow more time for the service to recover—with a consequently increased chance of the operation eventually succeeding.
 * Consider specifying the **MaximumExecutionTime** property of the **RequestOptions** parameter to limit the total execution time, but take into account the type and size of the operation when choosing a timeout value.
 * If you need to implement a custom retry, avoid creating wrappers around the storage client classes. Instead, use the capabilities to extend the existing policies through the **IExtendedRetryPolicy** interface.
@@ -110,7 +129,7 @@ Consider starting with following settings for retrying operations. These are gen
 
 ## Telemetry
 
-Retry attempts are logged to a **TraceSource**. You must configure a **TraceListener** to capture the events and write them to a suitable destination log. You can use the **TextWriterTraceListener** or **XmlWriterTraceListener** to write the data to a log file, the **EventLogTraceListener** to write to the Windows Event Log, or the **EventProviderTraceListener** to write trace data to the ETW subsystem. You can also configure auto-flushing of the buffer, and the verbosity of events that will be logged (for example, Error, Warning, Informational, and Verbose). For more information, see [Client-side Logging with the .NET Storage Client Library](http://msdn.microsoft.com/en-us/library/azure/dn782839.aspx). 
+Retry attempts are logged to a **TraceSource**. You must configure a **TraceListener** to capture the events and write them to a suitable destination log. You can use the **TextWriterTraceListener** or **XmlWriterTraceListener** to write the data to a log file, the **EventLogTraceListener** to write to the Windows Event Log, or the **EventProviderTraceListener** to write trace data to the ETW subsystem. You can also configure auto-flushing of the buffer, and the verbosity of events that will be logged (for example, Error, Warning, Informational, and Verbose). For more information, see [Client-side Logging with the .NET Storage Client Library](http://msdn.microsoft.com/en-us/library/azure/dn782839.aspx).
 
 Operations can receive an **OperationContext** instance, which exposes a **Retrying** event that can be used to attach custom telemetry logic. For more information, see [OperationContext.Retrying Event](http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.operationcontext.retrying.aspx).
 
@@ -238,13 +257,13 @@ You can then specify this as the default retry strategy for all operations using
 
 	DbConfiguration.SetConfiguration(new BloggingContextConfiguration());
 
-You can specify the retry configuration class for a context by annotating the context class with a **DbConfigurationType** attribute. However, if you have only one configuration class, EF will use it without the need to annotate the context. 
+You can specify the retry configuration class for a context by annotating the context class with a **DbConfigurationType** attribute. However, if you have only one configuration class, EF will use it without the need to annotate the context.
 
 	[DbConfigurationType(typeof(BloggingContextConfiguration))]
 	public class BloggingContext : DbContext
 	{ ...
 
-If you need to use different retry strategies for specific operations, or disable retries for specific operations, you can create a configuration class that allows you to suspend or swap strategies by setting a flag in the **CallContext**. The configuration class can use this flag to switch strategies, or disable the strategy you provide and use a default strategy. For more information, see [Suspend Execution Strategy](http://msdn.microsoft.com/en-US/dn307226#transactions_workarounds) in the page Limitations with Retrying Execution Strategies (EF6 onwards). 
+If you need to use different retry strategies for specific operations, or disable retries for specific operations, you can create a configuration class that allows you to suspend or swap strategies by setting a flag in the **CallContext**. The configuration class can use this flag to switch strategies, or disable the strategy you provide and use a default strategy. For more information, see [Suspend Execution Strategy](http://msdn.microsoft.com/en-US/dn307226#transactions_workarounds) in the page Limitations with Retrying Execution Strategies (EF6 onwards).
 
 Another technique for using specific retry strategies for individual operations is to create an instance of the required strategy class and supply the desired settings through parameters. You then invoke its **ExecuteAsync** method.
 
@@ -254,7 +273,7 @@ Another technique for using specific retry strategies for individual operations 
 	    {
 	        using (var db = new BloggingContext("Blogs"))
 	        {
-	            // Acquire some values asynchronously and return them 
+	            // Acquire some values asynchronously and return them
 	        }
 	    },
 	    new CancellationToken()
@@ -266,7 +285,7 @@ For more information, see [Code-Based Configuration (EF6 onwards)](http://msdn.m
 
 The following table shows the default settings for the built-in retry policy when using EF6.
 
-![](figures/RetryServiceSpecific/RetryServiceSpecificGuidanceTable4.png)
+![](media/best-practices-retry-service-specific/RetryServiceSpecificGuidanceTable4.png)
 ## Retry usage guidance
 
 Consider the following guidelines when accessing SQL Database using EF6:
@@ -320,7 +339,7 @@ namespace RetryCodeSamples
 	{
 	    public async static Task Samples()
 	    {
-	        // Execution strategy configured by DbConfiguration subclass, discovered automatically or 
+	        // Execution strategy configured by DbConfiguration subclass, discovered automatically or
 	        // or explicitly indicated through configuration or with an attribute. Default is no retries.
 	        using (var db = new BloggingContext("Blogs"))
 	        {
@@ -408,7 +427,7 @@ Consider starting with following settings for retrying operations. These are gen
 | **Context**          | **Sample target E2E<br />max latency** | **Retry strategy** | **Settings**                                                          | **Values**                 | **How it works**                                                                                                              |
 |----------------------|-----------------------------------|--------------------|-----------------------------------------------------------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | Interactive, UI,<br />or foreground | 2 sec                             | FixedInterval      | Retry count<br />Retry interval<br />First fast retry                           | 3<br />500 ms<br />true              | Attempt 1 - delay 0 sec<br />Attempt 2 - delay 500 ms<br />Attempt 3 - delay 500 ms                                                     |
-| Background<br />or batch            | 30 sec                            | ExponentialBackoff | Retry count<br />Min back-off<br />Max back-off<br />Delta back-off<br />First fast retry | 5<br />0 sec<br />60 sec<br />2 sec<br />false | Attempt 1 - delay 0 sec<br />Attempt 2 - delay ~2 sec<br />Attempt 3 - delay ~6 sec<br />Attempt 4 - delay ~14 sec<br />Attempt 5 - delay ~30 sec | 
+| Background<br />or batch            | 30 sec                            | ExponentialBackoff | Retry count<br />Min back-off<br />Max back-off<br />Delta back-off<br />First fast retry | 5<br />0 sec<br />60 sec<br />2 sec<br />false | Attempt 1 - delay 0 sec<br />Attempt 2 - delay ~2 sec<br />Attempt 3 - delay ~6 sec<br />Attempt 4 - delay ~14 sec<br />Attempt 5 - delay ~30 sec |
 
 > **Note**: The end-to-end latency targets assume the default timeout for connections to the service. If you specify longer connection timeouts, the end-to-end latency will be extended by this additional time for every retry attempt.
 
@@ -421,7 +440,7 @@ However, in the current version of the Transient Fault Handling Application Bloc
 You can use the simplified asynchronous support in version 5 of the C# language to create asynchronous versions of the methods provided by the block. For example, the following code shows how you might create an asynchronous version of the **ExecuteReaderWithRetry** extension method. The changes and additions to the original code are highlighted. The source code for Topaz is available on GitHub at [Transient Fault Handling Application Block ("Topaz")](http://topaz.codeplex.com/SourceControl/latest).
 
 ```csharp
-public async static Task<SqlDataReader> ExecuteReaderWithRetryAsync(this SqlCommand command, RetryPolicy cmdRetryPolicy, 
+public async static Task<SqlDataReader> ExecuteReaderWithRetryAsync(this SqlCommand command, RetryPolicy cmdRetryPolicy,
 RetryPolicy conRetryPolicy)
 {
 	GuardConnectionIsNotNull(command);
@@ -485,7 +504,7 @@ Service Bus is a cloud messaging platform that provides loosely coupled message 
 
 Service Bus implements retries using implementations of the [RetryPolicy](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.retrypolicy.aspx) base class. All of the Service Bus clients expose a **RetryPolicy** property that can be set to one of the implementations of the **RetryPolicy** base class. The built-in implementations are:
 
-* The [RetryExponential Class](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.retryexponential.aspx). This exposes properties that control the back-off interval, the retry count, and the **TerminationTimeBuffer** property that is used to limit the total time for the operation to complete. 
+* The [RetryExponential Class](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.retryexponential.aspx). This exposes properties that control the back-off interval, the retry count, and the **TerminationTimeBuffer** property that is used to limit the total time for the operation to complete.
 * The [NoRetry Class](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.noretry.aspx). This is used when retries at the Service Bus API level are not required, such as when retries are managed by another process as part of a batch or multiple step operation.
 
 Service Bus actions can return a range of exceptions, as listed in [Appendix: Messaging Exceptions](http://msdn.microsoft.com/en-us/library/hh418082.aspx). The list provides information about which if these indicate that retrying the operation is appropriate. For example, a [ServerBusyException](http://msdn.microsoft.com/en-us/library/microsoft.servicebus.messaging.serverbusyexception.aspx) indicates that the client should wait for a period of time, then retry the operation. The occurrence of a **ServerBusyException** also causes Service Bus to switch to a different mode, in which an extra 10-second delay is added to the computed retry delays. This mode is reset after a short period.
@@ -504,7 +523,7 @@ Retry policies are set programmatically, and can be set as a default policy for 
 
 Note that this code uses named parameters for clarity. Alternatively you can omit the names because none of the parameters is optional.
 
-	namespaceManager.Settings.RetryPolicy = new RetryExponential(TimeSpan.FromSeconds(0.1), 
+	namespaceManager.Settings.RetryPolicy = new RetryExponential(TimeSpan.FromSeconds(0.1),
 	                 TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5), 3);
 
 To set the default retry policy for all clients created from a messaging factory, you set the **RetryPolicy** of the **MessagingFactory**.
@@ -528,7 +547,7 @@ client.RetryPolicy = new RetryExponential(minBackoff: TimeSpan.FromSeconds(0.1),
 The retry policy cannot be set at the individual operation level. It applies to all operations for the messaging client.
 The following table shows the default settings for the built-in retry policy.
 
-![](figures/RetryServiceSpecific/RetryServiceSpecificGuidanceTable7.png)
+![](media/best-practices-retry-service-specific/RetryServiceSpecificGuidanceTable7.png)
 
 ## Retry usage guidance
 
@@ -540,7 +559,7 @@ Consider the following guidelines when using Service Bus:
 Consider starting with following settings for retrying operations. These are general purpose settings, and you should monitor the operations and fine tune the values to suit your own scenario.
 
 
-![](figures/RetryServiceSpecific/RetryServiceSpecificGuidanceTable8.png)
+![](media/best-practices-retry-service-specific/RetryServiceSpecificGuidanceTable8.png)
 
 ## Telemetry
 
@@ -548,15 +567,15 @@ Service Bus logs retries as ETW events using an **EventSource**. You must attach
 
 ```text
 Microsoft-ServiceBus-Client/RetryPolicyIteration
-ThreadID="14,500" 
-FormattedMessage="[TrackingId:] RetryExponential: Operation Get:https://retry-guidance-tests.servicebus.windows.net/TestQueue/?api-version=2014-05 at iteration 0 is retrying after 00:00:00.1000000 sleep because of Microsoft.ServiceBus.Messaging.MessagingCommunicationException: The remote name could not be resolved: 'retry-guidance-tests.servicebus.windows.net'.TrackingId:6a26f99c-dc6d-422e-8565-f89fdd0d4fe3, TimeStamp:9/5/2014 10:00:13 PM." 
-trackingId="" 
-policyType="RetryExponential" 
-operation="Get:https://retry-guidance-tests.servicebus.windows.net/TestQueue/?api-version=2014-05" 
-iteration="0" 
-iterationSleep="00:00:00.1000000" 
-lastExceptionType="Microsoft.ServiceBus.Messaging.MessagingCommunicationException" 
-exceptionMessage="The remote name could not be resolved: 'retry-guidance-tests.servicebus.windows.net'.TrackingId:6a26f99c-dc6d-422e-8565-f89fdd0d4fe3,TimeStamp:9/5/2014 10:00:13 PM" 
+ThreadID="14,500"
+FormattedMessage="[TrackingId:] RetryExponential: Operation Get:https://retry-guidance-tests.servicebus.windows.net/TestQueue/?api-version=2014-05 at iteration 0 is retrying after 00:00:00.1000000 sleep because of Microsoft.ServiceBus.Messaging.MessagingCommunicationException: The remote name could not be resolved: 'retry-guidance-tests.servicebus.windows.net'.TrackingId:6a26f99c-dc6d-422e-8565-f89fdd0d4fe3, TimeStamp:9/5/2014 10:00:13 PM."
+trackingId=""
+policyType="RetryExponential"
+operation="Get:https://retry-guidance-tests.servicebus.windows.net/TestQueue/?api-version=2014-05"
+iteration="0"
+iterationSleep="00:00:00.1000000"
+lastExceptionType="Microsoft.ServiceBus.Messaging.MessagingCommunicationException"
+exceptionMessage="The remote name could not be resolved: 'retry-guidance-tests.servicebus.windows.net'.TrackingId:6a26f99c-dc6d-422e-8565-f89fdd0d4fe3,TimeStamp:9/5/2014 10:00:13 PM"
 ```
 
 ## Examples (Service bus)
@@ -572,7 +591,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-		
+
 namespace RetryCodeSamples
 {
 	class ServiceBusCodeSamples
@@ -581,20 +600,20 @@ namespace RetryCodeSamples
 		    @"Endpoint=sb://[my-namespace].servicebus.windows.net/;
 		        SharedAccessKeyName=RootManageSharedAccessKey;
 		        SharedAccessKey=C99..........Mk=";
-		
+
 		public async static Task Samples()
 		{
 		    const string QueueName = "TestQueue";
-		
+
 		    ServiceBusEnvironment.SystemConnectivity.Mode = ConnectivityMode.Http;
-		
+
 		    var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-		
-		    // The namespace manager will have a default exponential policy with 10 retry attempts 
+
+		    // The namespace manager will have a default exponential policy with 10 retry attempts
 		    // and a 3 second delay delta.
-		    // Retry delays will be approximately 0 sec, 3 sec, 9 sec, 25 sec and the fixed 30 sec, 
+		    // Retry delays will be approximately 0 sec, 3 sec, 9 sec, 25 sec and the fixed 30 sec,
 		    // with an extra 10 sec added when receiving a ServiceBusyException.
-	
+
 		    {
 		        // Set different values for the retry policy, used for all operations on the namespace manager.
 		        namespaceManager.Settings.RetryPolicy =
@@ -604,22 +623,22 @@ namespace RetryCodeSamples
 		                deltaBackoff: TimeSpan.FromSeconds(1.75),
 		                terminationTimeBuffer: TimeSpan.FromSeconds(4),
 		                maxRetryCount: 3);
-		
+
 		        // Policies cannot be specified on a per-operation basis.
 		        if (!await namespaceManager.QueueExistsAsync(QueueName))
 		        {
 		            await namespaceManager.CreateQueueAsync(QueueName);
 		        }
 		    }
-		
-		
+
+
 		    var messagingFactory = MessagingFactory.Create(
 		        namespaceManager.Address, namespaceManager.Settings.TokenProvider);
-		    // The messaging factory will have a default exponential policy with 10 retry attempts 
+		    // The messaging factory will have a default exponential policy with 10 retry attempts
 		    // and a 3 second delay delta.
-		    // Retry delays will be approximately 0 sec, 3 sec, 9 sec, 25 sec and the fixed 30 sec, 
+		    // Retry delays will be approximately 0 sec, 3 sec, 9 sec, 25 sec and the fixed 30 sec,
 		    // with an extra 10 sec added when receiving a ServiceBusyException.
-		
+
 		    {
 		        // Set different values for the retry policy, used for clients created from it.
 		        messagingFactory.RetryPolicy =
@@ -629,18 +648,18 @@ namespace RetryCodeSamples
 		                deltaBackoff: TimeSpan.FromSeconds(2),
 		                terminationTimeBuffer: TimeSpan.FromSeconds(5),
 		                maxRetryCount: 3);
-		
-		
+
+
 		        // Policies cannot be specified on a per-operation basis.
 		        var session = await messagingFactory.AcceptMessageSessionAsync();
 		    }
-		
-		
+
+
 		    {
 		        var client = messagingFactory.CreateQueueClient(QueueName);
 		        // The client inherits the policy from the factory that created it.
-		
-		
+
+
 		        // Set different values for the retry policy on the client.
 		        client.RetryPolicy =
 		            new RetryExponential(
@@ -649,8 +668,8 @@ namespace RetryCodeSamples
 		                deltaBackoff: TimeSpan.FromSeconds(2),
 		                terminationTimeBuffer: TimeSpan.FromSeconds(5),
 		                maxRetryCount: 3);
-		
-		
+
+
 		        // Policies cannot be specified on a per-operation basis.
 		        var session = await client.AcceptMessageSessionAsync();
 		    }
@@ -944,7 +963,7 @@ The following code example shows how you can use the Transient Fault Handling Ap
 	using System.Threading.Tasks;
 	using Microsoft.IdentityModel.Clients.ActiveDirectory;
 	using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
-	
+
 	namespace RetryCodeSamples
 	{
 	    class ActiveDirectoryCodeSamples
@@ -982,20 +1001,20 @@ The following code example shows how you can use the Transient Fault Handling Ap
 	    public class AdalDetectionStrategy : ITransientErrorDetectionStrategy
 	    {
 	        private static readonly WebExceptionStatus[] webExceptionStatus =
-	            new[] 
-	            { 
-	                WebExceptionStatus.ConnectionClosed, 
-	                WebExceptionStatus.Timeout, 
-	                WebExceptionStatus.RequestCanceled 
+	            new[]
+	            {
+	                WebExceptionStatus.ConnectionClosed,
+	                WebExceptionStatus.Timeout,
+	                WebExceptionStatus.RequestCanceled
 	            };
 
 	        private static readonly HttpStatusCode[] httpStatusCodes =
-	            new[] 
-	            { 
-	                HttpStatusCode.InternalServerError, 
-	                HttpStatusCode.GatewayTimeout, 
-	                HttpStatusCode.ServiceUnavailable, 
-	                HttpStatusCode.RequestTimeout 
+	            new[]
+	            {
+	                HttpStatusCode.InternalServerError,
+	                HttpStatusCode.GatewayTimeout,
+	                HttpStatusCode.ServiceUnavailable,
+	                HttpStatusCode.RequestTimeout
 	            };
 
 	        public bool IsTransient(Exception ex)
@@ -1046,7 +1065,7 @@ For information about retrying Active Directory Graph API operations and the err
 
 Consider the following when accessing Azure or third party services:
 
-* Use a systematic approach to managing retries, perhaps as reusable code, so that you can apply a consistent methodology across all clients and all solutions. 
+* Use a systematic approach to managing retries, perhaps as reusable code, so that you can apply a consistent methodology across all clients and all solutions.
 * Consider using a retry framework such as the Transient Fault Handling Application Block to manage retries if the target service or client has no built-in retry mechanism. This will help you implement a consistent retry behavior, and it may provide a suitable default retry strategy for the target service. However, you may need to create custom retry code for services that have non-standard behavior, that do not rely on exceptions to indicate transient failures, or if you want to use a **Retry-Response** reply to manage retry behavior.
 * The transient detection logic will depend on the actual client API you use to invoke the REST calls. Some clients, such as the newer **HttpClient** class, will not throw exceptions for completed requests with a non-success HTTP status code. This improves performance but prevents the use of the Transient Fault Handling Application Block. In this case you could wrap the call to the REST API with code that produces exceptions for non-success HTTP status codes, which can then be processed by the block. Alternatively, you can use a different mechanism to drive the retries.
 * The HTTP status code returned from the service can help to indicate whether the failure is transient. You may need to examine the exceptions generated by a client or the retry framework to access the status code or to determine the equivalent exception type. The following HTTP codes typically indicate that a retry is appropriate:
@@ -1057,7 +1076,7 @@ Consider the following when accessing Azure or third party services:
   * 504 Gateway Timeout
 * If you base your retry logic on exceptions, the following typically indicate a transient failure where no connection could be established:
   * WebExceptionStatus.ConnectionClosed
-  * WebExceptionStatus.ConnectFailure 
+  * WebExceptionStatus.ConnectFailure
   * WebExceptionStatus.Timeout
   * WebExceptionStatus.RequestCanceled
 * In the case of a service unavailable status, the service might indicate the appropriate delay before retrying in the **Retry-After** response header or a different custom header (as in the DocumentDB service). Services might also send additional information as custom headers, or embedded in the content of the response. The Transient Fault Handling Application Block cannot use the standard or any custom “retry-after” headers.
@@ -1071,9 +1090,9 @@ The following are the typical types of retry strategy intervals:
 * **Exponential**: A retry policy that performs a specified number of retries, using a randomized exponential back off approach to determine the interval between retries. For example:
 
 		var random = new Random();
-	
+
 		var delta = (int)((Math.Pow(2.0, currentRetryCount) - 1.0) *
-		            random.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8), 
+		            random.Next((int)(this.deltaBackoff.TotalMilliseconds * 0.8),
 		            (int)(this.deltaBackoff.TotalMilliseconds * 1.2)));
 		var interval = (int)Math.Min(checked(this.minBackoff.TotalMilliseconds + delta),
 		               this.maxBackoff.TotalMilliseconds);

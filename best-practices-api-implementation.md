@@ -1,3 +1,21 @@
+<properties
+   pageTitle="API implementation guidance | Microsoft Azure"
+   description="Guidance upon how to implement an API."
+   services="service-name"
+   documentationCenter="dev-center-name"
+   authors="dragon119"
+   manager="masimms"
+   editor=""
+   tags=""/>
+
+<tags
+   ms.service="required"
+   ms.devlang="may be required"
+   ms.topic="article"
+   ms.tgt_pltfrm="may be required"
+   ms.workload="required"
+   ms.date="05/13/2015"
+   ms.author="masashin"/>
 
 ![](http://pnp.azurewebsites.net/images/pnp-logo.png)
 
@@ -447,7 +465,7 @@ In a distributed environment such as that involving a web server and client appl
 	```
 
 	This code makes use of a custom `IHttpActionResult` class named `OkResultWithCaching`. This class enables the controller to set the cache header contents:
-	
+
 	```C#
 	public class OkResultWithCaching<T> : OkNegotiatedContentResult<T>
     {
@@ -582,7 +600,7 @@ In a distributed environment such as that involving a web server and client appl
 
                 // Retrieve the If-None-Match header from the request (if it exists)
                 var nonMatchEtags = Request.Headers.IfNoneMatch;
-                
+
                 // If there is an ETag in the If-None-Match header and
                 // this ETag matches that of the order just retrieved,
                 // then create a Not Modified response message
@@ -685,12 +703,12 @@ In a distributed environment such as that involving a web server and client appl
                     return NotFound();
                 }
 
-                var hashedOrder = orderToUpdate.GetHashCode(); 
+                var hashedOrder = orderToUpdate.GetHashCode();
                 string hashedOrderEtag = String.Format("\"{0}\"", hashedOrder);
-       
+
                 // Retrieve the If-Match header from the request (if it exists)
                 var matchEtags = Request.Headers.IfMatch;
-                
+
                 // If there is an Etag in the If-Match header and
                 // this etag matches that of the order just retrieved,
                 // or if there is no etag, then update the Order
@@ -698,11 +716,11 @@ In a distributed environment such as that involving a web server and client appl
                      String.Compare(matchEtags.First().Tag, hashedOrderEtag) == 0)) ||
                      matchEtags.Count == 0)
                 {
-                    // Modify the order 
+                    // Modify the order
                     orderToUpdate.OrderValue = order.OrderValue;
                     orderToUpdate.ProductID = order.ProductID;
                     orderToUpdate.Quantity = order.Quantity;
-                    
+
                     // Save the order back to the data store
                     // ...
 
@@ -714,7 +732,7 @@ In a distributed environment such as that involving a web server and client appl
                     hashedOrder = order.GetHashCode();
                     hashedOrderEtag = String.Format("\"{0}\"", hashedOrder);
                     var eTag = new EntityTagHeaderValue(hashedOrderEtag);
-                    
+
                     var location = new Uri(string.Format("{0}/{1}/{2}", baseUri, Constants.ORDERS, id));
                     var response = new EmptyResultWithCaching()
                     {
@@ -723,10 +741,10 @@ In a distributed environment such as that involving a web server and client appl
                         ETag = eTag,
                         Location = location
                     };
-                    
+
                     return response;
-                }        
-                
+                }
+
                 // Otherwise return a Precondition Failed response
                 return StatusCode(HttpStatusCode.PreconditionFailed);
             }
@@ -750,7 +768,7 @@ There may be occasions when a client application needs to issue requests that se
 
 	Some resources may be large objects or include large fields, such as graphics images or other types of binary data. A web API should support streaming to enable optimized uploading and downloading of these resources.
 
-	The HTTP protocol provides the chunked transfer encoding mechanism to stream large data objects back to a client. When the client sends an HTTP GET request for a large object, the web API can send the reply back in piecemeal _chunks_ over an HTTP connection. The length of the data in the reply may not be known initially (it might be generated), so the server hosting the web API should send a response message with each chunk that specifies the Transfer-Encoding: Chunked header rather than a Content-Length header. The client application can receive each chunk in turn to build up the complete response. The data transfer completes when the server sends back a final chunk with zero size.	You can implement chunking in the ASP.NET Web API by using the `PushStreamContent` class. 
+	The HTTP protocol provides the chunked transfer encoding mechanism to stream large data objects back to a client. When the client sends an HTTP GET request for a large object, the web API can send the reply back in piecemeal _chunks_ over an HTTP connection. The length of the data in the reply may not be known initially (it might be generated), so the server hosting the web API should send a response message with each chunk that specifies the Transfer-Encoding: Chunked header rather than a Content-Length header. The client application can receive each chunk in turn to build up the complete response. The data transfer completes when the server sends back a final chunk with zero size.	You can implement chunking in the ASP.NET Web API by using the `PushStreamContent` class.
 
 	The following example shows an operation that responds to HTTP GET requests for product images:
 
@@ -839,7 +857,7 @@ There may be occasions when a client application needs to issue requests that se
                 }
                 else
                 {
-                    var id = new Random().Next(); // Use a random int as the key for the new resource. Should probably check that this key has not already been used 
+                    var id = new Random().Next(); // Use a random int as the key for the new resource. Should probably check that this key has not already been used
                     var container = ConnectToBlobContainer(Constants.PRODUCTIMAGESCONTAINERNAME);
                     return new FileUploadResult()
                     {
@@ -1036,7 +1054,7 @@ The nature of a web API brings its own additional requirements to verify that it
 
 Watch out for unexpected response status codes in the 5xx range. These messages are usually reported by the host server to indicate that it was unable to fulfil a valid request.
 
-- Test the different request header combinations that a client application can specify and ensure that the web API returns the expected information in response messages. 
+- Test the different request header combinations that a client application can specify and ensure that the web API returns the expected information in response messages.
 
 - Test query strings. If an operation can take optional parameters (such as pagination requests), test the different combinations and order of parameters.
 

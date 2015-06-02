@@ -1,3 +1,22 @@
+<properties
+   pageTitle="Availability checklist | Microsoft Azure"
+   description="Checklist that provides guidance for availability concerns during design."
+   services="service-name"
+   documentationCenter="dev-center-name"
+   authors="dragon119"
+   manager="masimms"
+   editor=""
+   tags=""/>
+
+<tags
+   ms.service="required"
+   ms.devlang="may be required"
+   ms.topic="article"
+   ms.tgt_pltfrm="may be required"
+   ms.workload="required"
+   ms.date="04/28/2015"
+   ms.author="masashin"/>
+
 ![](http://pnp.azurewebsites.net/images/pnp-logo.png)
 
 # Availability checklist

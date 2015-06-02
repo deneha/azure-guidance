@@ -1,3 +1,22 @@
+<properties
+   pageTitle="Data partitioning guidance | Microsoft Azure"
+   description="Description of article"
+   services="service-name"
+   documentationCenter="dev-center-name"
+   authors="dragon119"
+   manager="masimms"
+   editor=""
+   tags=""/>
+
+<tags
+   ms.service="required"
+   ms.devlang="may be required"
+   ms.topic="article"
+   ms.tgt_pltfrm="may be required"
+   ms.workload="required"
+   ms.date="04/28/2015"
+   ms.author="masashin"/>
+
 ![](http://pnp.azurewebsites.net/images/pnp-logo.png)
 
 # Data partitioning guidance
@@ -42,13 +61,13 @@ However, the differing requirements of each strategy can raise a number of confl
 ### Horizontal partitioning (sharding)
 Figure 1 shows an overview of horizontal partitioning or sharding. In this example, product inventory data is divided into shards based on the product key. Each shard holds the data for a contiguous range of shard keys (A-G and H-Z), organized alphabetically.
 
-![](figures/DataPartitioning/DataPartitioning01.png)
+![](media/best-practices-data-partitioning/DataPartitioning01.png)
 
 _Figure 1. - Horizontally partitioning (sharding) data based on a partition key_
 
 Sharding enables you to spread the load over more computers; reducing contention, and improving performance. You can scale the system out by adding further shards running on additional servers.
 
-The most important factor when implementing this partitioning strategy is the choice of sharding key. It can be difficult to change the key after the system is in operation. The key must ensure that data is partitioned so that the workload is as even as possible across the shards. Note that different shards do not have to contain similar volumes of data, rather the important consideration is to balance the number of requests; some shards may be very large but each item is the subject of a low number of access operations, while other shards may be smaller but each item is accessed much more frequently. It is also important to ensure that a single shard does not exceed the scale limits (in terms of capacity and processing resources) of the data store being used to host that shard. 
+The most important factor when implementing this partitioning strategy is the choice of sharding key. It can be difficult to change the key after the system is in operation. The key must ensure that data is partitioned so that the workload is as even as possible across the shards. Note that different shards do not have to contain similar volumes of data, rather the important consideration is to balance the number of requests; some shards may be very large but each item is the subject of a low number of access operations, while other shards may be smaller but each item is accessed much more frequently. It is also important to ensure that a single shard does not exceed the scale limits (in terms of capacity and processing resources) of the data store being used to host that shard.
 
 The sharding scheme should also avoid creating hotspots (or hot partitions) that may affect performance and availability. For example, using a hash of a customer identifier instead of the first letter of a customer’s name will prevent the unbalanced distribution that would result from common and less common initial letters. This is a typical technique that helps to distribute the data more evenly across partitions.
 
@@ -59,7 +78,7 @@ The sharding key you choose should minimize any future requirements to split lar
 ### Vertical partitioning
 The most common use for vertical partitioning is to reduce the I/O and performance costs associated with fetching the items that are accessed most frequently. Figure 2 shows an overview of an example of vertical partitioning, where different properties for each data item are held in different partitions; the name, description, and price information for products are accessed more frequently than the volume in stock or the last ordered date.
 
-![](figures/DataPartitioning/DataPartitioning02.png)
+![](media/best-practices-data-partitioning/DataPartitioning02.png)
 
 _Figure 2. - Vertically partitioning data by its pattern of use_
 
@@ -74,7 +93,7 @@ Vertical partitioning can also reduce the amount of concurrent access required t
 ### Functional partitioning
 For systems where it is possible to identify a bounded context for each distinct business area or service in the application, functional partitioning provides a technique for improving isolation and data access performance. Another common use of functional partitioning is to separate read-write data from read-only data used for reporting purposes. Figure 3 shows an overview of functional partitioning where inventory data is separated from customer data.
 
-![](figures/DataPartitioning/DataPartitioning03.png)
+![](media/best-practices-data-partitioning/DataPartitioning03.png)
 
 _Figure 3. - Functionally partitioning data by bounded context or subdomain_
 
@@ -150,7 +169,7 @@ Consider the following factors that affect operational management:
 
 Different data storage technologies typically provide their own features to support partitioning. The following sections summarize the options implemented by data stores commonly used by Azure applications, and describe considerations for designing applications that can take best advantage of these features.
 # Partitioning strategies for Azure SQL Database
-Azure SQL Database is a relational database-as-a-service that runs in the cloud. It is based on Microsoft SQL Server. A relational database divides information into tables, and each table holds information about entities as a series of rows. Each row contains columns that hold the data for the individual fields of an entity. The [Azure SQL Database](https://msdn.microsoft.com/library/azure/ee336279.aspx) page on the Microsoft website provides detailed documentation on creating and using SQL databases. 
+Azure SQL Database is a relational database-as-a-service that runs in the cloud. It is based on Microsoft SQL Server. A relational database divides information into tables, and each table holds information about entities as a series of rows. Each row contains columns that hold the data for the individual fields of an entity. The [Azure SQL Database](https://msdn.microsoft.com/library/azure/ee336279.aspx) page on the Microsoft website provides detailed documentation on creating and using SQL databases.
 ## Horizontal partitioning with Elastic Scale
 A single SQL database has a limit to the volume of data that it can contain, and throughput is constrained by architectural factors and the number of concurrent connections that it supports. Azure SQL Database provides Elastic Scale to support horizontal scaling for a SQL database. Using Elastic Scale, you can partition your data into shards spread across multiple SQL databases, and you can add or remove shards as the volume of data that you need to handle grows and shrinks. Using Elastic Scale can also help to reduce contention by distributing the load across databases.
 
@@ -168,19 +187,19 @@ Elastic Scale provides two schemes for mapping data to shardlets and storing the
 
 - A List Shard Map describes an association between single key and a shardlet. For example, in a multi-tenant system, the data for each tenant could be associated with a unique key and stored in its own shardlet. To guarantee privacy and isolation (to prevent one tenant from exhausting the data storage resources available to others), each shardlet could be held within its own shard.
 
-![](figures/DataPartitioning/PointShardlet.png)
+![](media/best-practices-data-partitioning/PointShardlet.png)
 
 _Figure 4. - Using a list shard map to store tenant data in separate shards_
 
 - A Range Shard Map describes an association between a set of contiguous key values and a shardlet. In the multi-tenant example described previously, as an alternative to implementing dedicated shardlets, you could group the data for a set of tenants (each with their own key) within the same shardlet. This scheme is less expensive than the first (tenants share data storage resources), but at the risk of reduced data privacy and isolation.
 
-![](figures/DataPartitioning/RangeShardlet.png)
+![](media/best-practices-data-partitioning/RangeShardlet.png)
 
 _Figure 5. - Using a range shard map to store data for a range of tenants in a shard_
 
 Note that a single shard can contain the data for several shardlets. For example, you could use list shardlets to store data for different non-contiguous tenants in the same shard. You can also mix range shardlets and list shardlets in the same shard, although they will be addressed through different maps in the global shard-map manager database (the global shard-map manager database can contain multiple shard maps). Figure 6 depicts this approach.
 
-![](figures/DataPartitioning/MultipleShardMaps.png)
+![](media/best-practices-data-partitioning/MultipleShardMaps.png)
 
 _Figure 6. - Implementing multiple shard maps_
 
@@ -224,7 +243,7 @@ The remainder of the data for an entity consists of application-defined fields. 
 
 Figure 7 shows the logical structure of an example storage account (Contoso Data) for a fictitious ecommerce application. The storage accounts contains three tables (Customer Info, Product Info, and Order Info), and each table has multiple partitions. In the Customer Info table the data is partitioned according to the city in which the customer is located, and the row key contains the customer ID. In the Product Info table the products are partitioned by product category and the row key contains the product number. In the Order Info table the orders are partitioned by the date on which they were placed and the row key specified the time the order was received. Note that all data is ordered by the row key in each partition.
 
-![](figures/DataPartitioning/TableStorage.png)
+![](media/best-practices-data-partitioning/TableStorage.png)
 
 _Figure 7. - The tables and partitions in an example storage account_
 
@@ -279,7 +298,7 @@ Service Bus assigns a message to a fragment as follows:
 
 You should consider the following points when deciding and how, or whether, to partition a Service Bus message queue or topic:
 
-- Service Bus queues and topics are created within the scope of a Service Bus namespace. Service Bus currently allows up to 100 partitioned queues or topics per namespace. 
+- Service Bus queues and topics are created within the scope of a Service Bus namespace. Service Bus currently allows up to 100 partitioned queues or topics per namespace.
 - Each Service Bus namespace imposes quotas on the resources available, such as the number of subscriptions per topic, the number of concurrent send and receive requests per second, and the maximum number of concurrent connections that can be established. These quotas are documented on the Microsoft website on the page [Service Bus Quotas](https://msdn.microsoft.com/library/azure/ee732538.aspx). If you expect to exceed these values, then create additional namespaces with their own queues and topics, and spread the work across these namespaces. For example, in a global application, create separate namespaces in each region and configure application instances to use the queues and topics in the nearest namespace.
 - Messages that are sent as part of a transaction must specify a partition key. This can be a _SessionId, PartitionKey,_ or _MessageId_. All messages that are sent as part of the same transaction must specify the same partition key because they must be handled by the same message broker process. You cannot send messages to different queues or topics within the same transaction.
 - You cannot configure a partitioned queue or topic to be automatically deleted when it becomes idle.
@@ -290,23 +309,23 @@ Azure DocumentDB is a NoSQL database that can store documents. A document in Doc
 
 Documents are organized into collections. A collection enables you to group related documents together. For example, in a system that maintains blog postings, you could store the contents of each blog post as a document in a collection, and create collections for each subject type. Alternatively, in a multitenant application such as a system that enables different authors to control and manage their own blog posts, you could partition blogs by author and create a separate collection for each author. The storage space allocated to collections is elastic and can shrink or grow as needed.
 
-Document collections provide a natural mechanism to partition data within a single database. Internally, a DocumentDB database can span several servers, and DocumentDB may attempt to spread the load by distributing collections across servers. The simplest way to implement sharding is to create a collection for each shard. 
+Document collections provide a natural mechanism to partition data within a single database. Internally, a DocumentDB database can span several servers, and DocumentDB may attempt to spread the load by distributing collections across servers. The simplest way to implement sharding is to create a collection for each shard.
 
 > **Note:** Each DocumentDB is allocated resources in terms of a _performance level_. A performance level is associated with with a _request unit_ (RU) rate limit. The RU rate limit specifies the volume of resources that will be reserved for that collection and is available for exclusive use by that collection. The cost of a collection depends on the performance level selected for that collection; the higher the performance level (and RU rate limit) the higher the charge. You can adjust the performance level of a collection by using the Azure management portal. For more information, see the page [Performance levels in DocumentDB](http://azure.microsoft.com/documentation/articles/documentdb-performance-levels/) on the Microsoft website.
 
 All databases are created in the context of a DocumentDB account. A single DocumentDB account can contain several databases, and specifies in which region the databases are created. Each DocumentDB account also enforces its own access control. You can use DocumentDB accounts to geo-locate shards (collections within databases) close to the users that need to access them, and enforce restrictions so that only those users can connect to them.
 
-Each DocumentDB account has a quota that limits the number of databases and collections that it can contain and the amount of document storage available. These limits are subject to change, but are described on the page [DocumentDB limits and quotas](http://azure.microsoft.com/documentation/articles/documentdb-limits/) on the Microsoft website. It is theoretically possible that if you implement a system where all shards belong to the same database you might reach the storage capacity limit of the account. In this case, you may need to create additional DocumentDB accounts and databases, and distribute the shards across these databases. However, even if you are unlikely to hit the storage capacity of a database, a good reason for using multiple databases is that each database has its own set of users and permissions. You can use this mechanism to isolate access to collections on a per-database basis. 
+Each DocumentDB account has a quota that limits the number of databases and collections that it can contain and the amount of document storage available. These limits are subject to change, but are described on the page [DocumentDB limits and quotas](http://azure.microsoft.com/documentation/articles/documentdb-limits/) on the Microsoft website. It is theoretically possible that if you implement a system where all shards belong to the same database you might reach the storage capacity limit of the account. In this case, you may need to create additional DocumentDB accounts and databases, and distribute the shards across these databases. However, even if you are unlikely to hit the storage capacity of a database, a good reason for using multiple databases is that each database has its own set of users and permissions. You can use this mechanism to isolate access to collections on a per-database basis.
 
 Figure 8 illustrates the high-level structure of the DocumentDB architecture.
 
-![](figures/DataPartitioning/DocumentDBStructure.png)
+![](media/best-practices-data-partitioning/DocumentDBStructure.png)
 
 _Figure 8. - The structure of DocumentDB_
 
 It is the responsibility of the client application to direct requests to the appropriate shard, usually by implementing its own mapping mechanism based on some attributes of the data that define the shard key. Figure 9 shows two DocumentDB databases, each containing two collections acting as shards. The data is sharded by tenant ID and contains the data for a specific tenant. The databases are created in separate DocumenDB accounts which are located in the same region as the tenants whose data they contain. The routing logic in the client application uses the tenant ID as the shard key.
 
-![](figures/DataPartitioning/DocumentDBPartitions.png)
+![](media/best-practices-data-partitioning/DocumentDBPartitions.png)
 
 _Figure 9. - Implementing sharding using Azure DocumentDB_
 
@@ -316,7 +335,7 @@ You should consider the following points when deciding how to partition data wit
 - Each document must have an attribute that can be used to uniquely identify that document within the collection in which it is held. This is different from the shard key which defines in which collection the document is held. A collection can contain a large number of documents, in theory only limited by the maximum length of the document ID. The document ID can be up to 255 characters.
 - All operations against a document are performed within the context of a transaction that is scoped to the collection in which the document is contained. If an operation fails, the work that it has performed is rolled back.  While a document is subject to an operation, any changes made are subject to snapshot level isolation. This mechanism guarantees that if, for example, a request to create a new document fails, another user querying the database simultaneously will not see a partial document that is then removed.
 - DocumentDB queries are also scoped to the collection level. A single query can only retrieve data from one collection. If you need to retrieve data from multiple collections you must query each collection individually and merge the results in your application code.
-- DocumentDB supports programmable items that can all be stored in a collection alongside documents: stored procedures, user-defined functions, and triggers (written in JavaScript). These items can access any document within the same collection. Furthermore, these items execute either inside the scope of the ambient transaction (in the case of a trigger that fires as the result of a create, delete, or replace operation performed against a document), or by starting a new transaction (in the case of a stored procedure that is executed as the result of an explicit client request). If the code in a programmable item throws an exception, the transaction is rolled back. You can use stored procedures and triggers to maintain integrity and consistency between documents, but these documents must all be part of the same collection. 
+- DocumentDB supports programmable items that can all be stored in a collection alongside documents: stored procedures, user-defined functions, and triggers (written in JavaScript). These items can access any document within the same collection. Furthermore, these items execute either inside the scope of the ambient transaction (in the case of a trigger that fires as the result of a create, delete, or replace operation performed against a document), or by starting a new transaction (in the case of a stored procedure that is executed as the result of an explicit client request). If the code in a programmable item throws an exception, the transaction is rolled back. You can use stored procedures and triggers to maintain integrity and consistency between documents, but these documents must all be part of the same collection.
 - You should ensure that the collections that you intend to hold in the databases in a DocumentDB account are unlikely to exceed the throughput limits defined by the performance levels of the collections. These limits are described on the [Manage DocumentDB capacity needs](http://azure.microsoft.com/en-us/documentation/articles/documentdb-manage/) page on the Microsoft website. If you anticipate reaching these limits, consider splitting collections across databases in different DocumentDB accounts to reduce the load per collection.
 
 # Partitioning Strategies for Azure Search
@@ -351,7 +370,7 @@ You should consider the following points when deciding how to partition data wit
 - Azure Redis Cache is not intended to act as a permanent data store, so whatever partitioning scheme you implement your application code should be prepared to accept that the data is not found in the cache and has to be retrieved from elsewhere.
 - Keep data that is frequently accessed together in the same partition. Redis is a powerful key/value store that provides several highly-optimized mechanisms for structuring data, ranging from simple strings (actually, binary data up to 512MB in length) to aggregate types such as lists (that can act as queues and stacks), sets (ordered and unordered), and hashes (that can group related fields together, such as the items that represent the fields in an object). The aggregate types enable you to associate many related values with the same key; a Redis key identifies a list, set, or hash rather than the data items that it contains. These types are all available with Azure Redis Cache and are described by the [Data Types](http://redis.io/topics/data-types) page on the Redis website. For example, in part of an ecommerce system that tracks the orders placed by customers, the details of each customer could be stored in a Redis hash keyed by using the customer ID. Each hash could hold a collection of order IDs for the customer. A separate Redis set could hold the orders, again structured as hashes, keyed by using the order ID.  Figure 10 shows this structure. Note that Redis does not implement any form of referential integrity, so it is the developer's responsibility to maintain the relationships between customers and orders.
 
-![](figures/DataPartitioning/RedisCustomersandOrders.png)
+![](media/best-practices-data-partitioning/RedisCustomersandOrders.png)
 
 _Figure 10. - Suggested structure in Redis storage for recording customer orders and their details_
 
@@ -392,7 +411,7 @@ Conceptually, this process comprises the following steps:
 
 To retain some availability, it could be possible to mark the original shard as read-only in step 1 rather than making it unavailable. This would allow applications to read the data while it is being moved but not change it.
 ## Online migration
-Online migration is more complex to perform but is less disruptive to users as data remains available during the entire procedure. The process is similar to that used by offline migration, except that the original shard is not marked offline (step 1). Depending on the granularity of the migration process (item by item or shard by shard), the data access code in the client applications may have to handle reading and writing data held in two locations (the original shard and the new shard) 
+Online migration is more complex to perform but is less disruptive to users as data remains available during the entire procedure. The process is similar to that used by offline migration, except that the original shard is not marked offline (step 1). Depending on the granularity of the migration process (item by item or shard by shard), the data access code in the client applications may have to handle reading and writing data held in two locations (the original shard and the new shard)
 
 For an example of a solution that supports online migration, see the [Split/Merge Service for Elastic Scale](http://azure.microsoft.com/en-us/documentation/articles/sql-database-elastic-scale-overview-split-and-merge/), documented online on the Microsoft website.
 # Related patterns and guidance
