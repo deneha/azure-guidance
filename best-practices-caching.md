@@ -1,19 +1,19 @@
 <properties
    pageTitle="Caching guidance | Microsoft Azure"
    description="Guidance on caching to improve performance and scalability."
-   services="service-name"
-   documentationCenter="dev-center-name"
+   services="cache"
+   documentationCenter="na"
    authors="dragon119"
    manager="masimms"
    editor=""
    tags=""/>
 
 <tags
-   ms.service="required"
-   ms.devlang="may be required"
+   ms.service="cache"
+   ms.devlang="na"
    ms.topic="article"
-   ms.tgt_pltfrm="may be required"
-   ms.workload="required"
+   ms.tgt_pltfrm="multiple"
+   ms.workload="multiple"
    ms.date="04/28/2015"
    ms.author="masashin"/>
 

@@ -1,8 +1,8 @@
 <properties
    pageTitle="Scalability checklist | Microsoft Azure"
    description="Scalability checklist guidance for design concerns for Azure Autoscaling."
-   services="service-name"
-   documentationCenter="dev-center-name"
+   services="multiple"
+   documentationCenter="na"
    authors="dragon119"
    manager="masimms"
    editor=""
@@ -10,10 +10,10 @@
 
 <tags
    ms.service="multiple"
-   ms.devlang="may be required"
+   ms.devlang="na"
    ms.topic="article"
-   ms.tgt_pltfrm="may be required"
-   ms.workload="required"
+   ms.tgt_pltfrm="multiple"
+   ms.workload="multiple"
    ms.date="04/28/2015"
    ms.author="masashin"/>
 

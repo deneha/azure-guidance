@@ -12,8 +12,8 @@
    ms.service="api-management"
    ms.devlang="rest-api"
    ms.topic="article"
-   ms.tgt_pltfrm="na"
-   ms.workload="tbd"
+   ms.tgt_pltfrm="multiple"
+   ms.workload="multiple"
    ms.date="04/28/2015"
    ms.author="masashin"/>
 
