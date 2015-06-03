@@ -1,19 +1,19 @@
 <properties
    pageTitle="API implementation guidance | Microsoft Azure"
    description="Guidance upon how to implement an API."
-   services="service-name"
-   documentationCenter="dev-center-name"
+   services="api-management"
+   documentationCenter="na"
    authors="dragon119"
    manager="masimms"
    editor=""
    tags=""/>
 
 <tags
-   ms.service="required"
+   ms.service="api-management"
    ms.devlang="rest-api"
    ms.topic="article"
-   ms.tgt_pltfrm="may be required"
-   ms.workload="required"
+   ms.tgt_pltfrm="na"
+   ms.workload="tbd"
    ms.date="05/13/2015"
    ms.author="masashin"/>
 
@@ -49,10 +49,10 @@ Some topics in this guidance are under discussion and may change in the future. 
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Overview
+## Overview
 A carefully-designed RESTful web API defines the resources, relationships, and navigation schemes that are accessible to client applications. When you implement and deploy a web API, you should consider the physical requirements of the environment hosting the web API and the way in which the web API is constructed rather than the logical structure of the data. This guidance focusses on best practices for implementing a web API and publishing it to make it available to client applications. Security concerns are described separately in the API Security Guidance document. You can find detailed information about web API design in the API Design Guidance document.
 
-# Considerations for implementing a RESTful web API
+## Considerations for implementing a RESTful web API
 The following sections illustrate best practice for using the ASP.NET Web API template to build a RESTful web API. For detailed information on using the Web API template, visit the [Learn About ASP.NET Web API](http://www.asp.net/web-api) page on the Microsoft website.
 
 ## Considerations for implementing request routing
@@ -101,7 +101,7 @@ In a service implemented by using the ASP.NET Web API, each request is routed to
 	}
 	```
 
-	> **Tip**: Utilize the default routing wherever possible and avoid defining many complicated custom routes as this can result in brittleness (it is very easy to add methods to a controller that result in ambiguous routes) and reduced performance (the bigger the routing table, the more work the Web API framework has to do to work out which route matches a given URI). Keep the API and routes simple. For more information, see the section Organizing the Web API Around Resources in the API Design Guidance. If you must define custom routes, a preferable approach is to use attribute-based routing described later in this section.
+	> [AZURE.TIP] Utilize the default routing wherever possible and avoid defining many complicated custom routes as this can result in brittleness (it is very easy to add methods to a controller that result in ambiguous routes) and reduced performance (the bigger the routing table, the more work the Web API framework has to do to work out which route matches a given URI). Keep the API and routes simple. For more information, see the section Organizing the Web API Around Resources in the API Design Guidance. If you must define custom routes, a preferable approach is to use attribute-based routing described later in this section.
 
 	For more information about convention-based routing, see the page [Routing in ASP.NET Web API](http://www.asp.net/web-api/overview/web-api-routing-and-actions/routing-in-aspnet-web-api) on the Microsoft website.
 
@@ -387,7 +387,7 @@ By default, in the ASP.NET Web API framework, if an operation throws an uncaught
 	}
 	```
 
-	> **Tip**: Do not include information that could be useful to an attacker attempting to penetrate your web API.For further information, visit the [Exception Handling in ASP.NET Web API](http://www.asp.net/web-api/overview/error-handling/exception-handling) page on the Microsoft website.
+	> [AZURE.TIP] Do not include information that could be useful to an attacker attempting to penetrate your web API.For further information, visit the [Exception Handling in ASP.NET Web API](http://www.asp.net/web-api/overview/error-handling/exception-handling) page on the Microsoft website.
 
 	> [AZURE.NOTE] Many web servers trap error conditions themselves before they reach the web API. For example, if you configure authentication for a web site and the user fails to provide the correct authentication information, the web server should respond with status code 401 (Unauthorized). Once a client has been authenticated, your code can perform its own checks to verify that the client should be able access the requested resource. If this authorization fails, you should return status code 403 (Forbidden).
 
@@ -542,7 +542,7 @@ In a distributed environment such as that involving a web server and client appl
 	{"OrderID":2,"ProductID":4,"Quantity":2,"OrderValue":10.00}
 	```
 
-	> **Tip**: For security reasons, do not allow sensitive data or data returned over an authenticated (HTTPS) connection to be cached.
+	> [AZURE.TIP] For security reasons, do not allow sensitive data or data returned over an authenticated (HTTPS) connection to be cached.
 
 	A client application can issue a subsequent GET request to retrieve the same resource at any time, and if the resource has changed (it has a different ETag) the cached version should be discarded and the new version added to the cache. If a resource is large and requires a significant amount of bandwidth to transmit back to the client, repeated requests to fetch the same data can become inefficient. To combat this, the HTTP protocol defines the following process for optimizing GET requests that you should support in a web API:
 
@@ -656,7 +656,7 @@ In a distributed environment such as that involving a web server and client appl
     }
 	```
 
-	> **Tip**: In this example, the ETag for the data is generated by hashing the data retrieved from the underlying data source. If the ETag can be computed in some other way, then the process can be optimized further and the data only needs to be fetched from the data source if it has changed.  This approach is especially useful if the data is large or accessing the data source can result in significant latency (for example, if the data source is a remote database).
+	> [AZURE.TIP] In this example, the ETag for the data is generated by hashing the data retrieved from the underlying data source. If the ETag can be computed in some other way, then the process can be optimized further and the data only needs to be fetched from the data source if it has changed.  This approach is especially useful if the data is large or accessing the data source can result in significant latency (for example, if the data source is a remote database).
 
 - **Use ETags to Support Optimistic Concurrency**.
 
@@ -757,7 +757,7 @@ In a distributed environment such as that involving a web server and client appl
     }
 	```
 
-	> **Tip**: Use of the If-Match header is entirely optional, and if it is omitted the web API will always attempt to update the specified order, possibly blindly overwriting an update made by another user. To avoid problems due to lost updates, always provide an If-Match header.
+	> [AZURE.TIP] Use of the If-Match header is entirely optional, and if it is omitted the web API will always attempt to update the specified order, possibly blindly overwriting an update made by another user. To avoid problems due to lost updates, always provide an If-Match header.
 
 <a name="considerations-for-handling-large"></a>
 ## Considerations for handling large requests and responses
@@ -898,11 +898,11 @@ There may be occasions when a client application needs to issue requests that se
     }
 	```
 
-	> **Tip**: The volume of data that you can upload to a web service is not constrained by streaming, and a single request could conceivably result in a massive object that consumes considerable resources. If, during the streaming process, the web API determines that the amount of data in a request has exceeded some acceptable bounds, it can abort the operation and return a response message with status code 413 (Request Entity Too Large).
+	> [AZURE.TIP] The volume of data that you can upload to a web service is not constrained by streaming, and a single request could conceivably result in a massive object that consumes considerable resources. If, during the streaming process, the web API determines that the amount of data in a request has exceeded some acceptable bounds, it can abort the operation and return a response message with status code 413 (Request Entity Too Large).
 
 	You can minimize the size of large objects transmitted over the network by using HTTP compression. This approach helps to reduce the amount of network traffic and the associated network latency, but at the cost of requiring additional processing at the client and the server hosting the web API. For example, a client application that expects to receive compressed data can include an Accept-Encoding: gzip request header (other data compression algorithms can also be specified). If the server supports compression it should respond with the content held in gzip format in the message body and the Content-Encoding: gzip response header.
 
-	> **Tip**: You can combine encoded compression with streaming; compress the data first before streaming it, and specify the gzip content encoding and chunked transfer encoding in the message headers. Also note that some web servers (such as Internet Information Server) can be configured to automatically compress HTTP responses regardless of whether the web API compresses the data or not.
+	> [AZURE.TIP] You can combine encoded compression with streaming; compress the data first before streaming it, and specify the gzip content encoding and chunked transfer encoding in the message headers. Also note that some web servers (such as Internet Information Server) can be configured to automatically compress HTTP responses regardless of whether the web API compresses the data or not.
 
 - **Implement partial responses for clients that do not support asynchronous operations**.
 
@@ -951,7 +951,7 @@ There may be occasions when a client application needs to issue requests that se
 
 	A client application can issue a request to retrieve 30 orders starting at offset 50 by using the URI _http://www.adventure-works.com/api/orders?limit=30&offset=50_.
 
-	> **Tip**: Avoid enabling client applications to specify query strings that result in a URI that is more than 2000 characters long. Many web clients and servers cannot handle URIs that are this long.
+	> [AZURE.TIP] Avoid enabling client applications to specify query strings that result in a URI that is more than 2000 characters long. Many web clients and servers cannot handle URIs that are this long.
 
 <a name="considerations-for-maintaining-responsiveness"></a>
 ## Considerations for maintaining responsiveness, scalability, and availability
@@ -962,7 +962,7 @@ The same web API might be utilized by many client applications running anywhere 
 
 	A request that might take a long time to process should be performed without blocking the client that submitted the request. The web API can perform some initial checking to validate the request, initiate a separate task to perform the work, and then return a response message with HTTP code 202 (Accepted). The task could run asynchronously as part of the web API processing, or it could be offloaded to an Azure WebJob (if the web API is hosted by an Azure Website) or a worker role (if the web API is implemented as an Azure cloud service).
 
-	> [AZURE.NOTE] For more information about using WebJobs with Azure Website, visit the page [Use WebJobs to run background tasks in Microsoft Azure Websites](http://azure.microsoft.com/en-us/documentation/articles/web-sites-create-web-jobs/) on the Microsoft website.
+	> [AZURE.NOTE] For more information about using WebJobs with Azure Website, visit the page [Use WebJobs to run background tasks in Microsoft Azure Websites](http://azure.microsoft.com/documentation/articles/web-sites-create-web-jobs/) on the Microsoft website.
 
 	The web API should also provide a mechanism to return the results of the processing to the client application. You can achieve this by providing a polling mechanism for client applications to periodically query whether the processing has finished and obtain the result, or enabling the web API to send a notification when the operation has completed.
 
@@ -984,9 +984,9 @@ The same web API might be utilized by many client applications running anywhere 
 
 	If you prefer to implement notifications, the options available include:
 
-	- Using an Azure Notification Hub to push asynchronous responses to client applications. The page [Azure Notification Hubs Notify Users](http://azure.microsoft.com/en-us/documentation/articles/notification-hubs-aspnet-backend-windows-dotnet-notify-users/) on the Microsoft website provides further details.
+	- Using an Azure Notification Hub to push asynchronous responses to client applications. The page [Azure Notification Hubs Notify Users](http://azure.microsoft.com/documentation/articles/notification-hubs-aspnet-backend-windows-dotnet-notify-users/) on the Microsoft website provides further details.
 
-	- Using the Comet model to retain a persistent network connection between the client and the server hosting the web API, and using this connection to push messages from the server back to the client. The MSDN magazine article [Building a Simple Comet Application in the Microsoft .NET Framework](https://msdn.microsoft.com/en-us/magazine/jj891053.aspx) describes an example solution.
+	- Using the Comet model to retain a persistent network connection between the client and the server hosting the web API, and using this connection to push messages from the server back to the client. The MSDN magazine article [Building a Simple Comet Application in the Microsoft .NET Framework](https://msdn.microsoft.com/magazine/jj891053.aspx) describes an example solution.
 
 	- Using SignalR to push data in real-time from the web server to the client over a persistent network connection. SignalR is available for ASP.NET web applications as a NuGet package. You can find more information on the [ASP.NET SignalR](http://signalr.net/) website.
 
@@ -1064,7 +1064,7 @@ You should also create and run performance tests to check that the web API opera
 
 # Publishing and managing a web API by using the Azure API Management Service
 
-Azure provides the [API Management Service](http://azure.microsoft.com/en-us/documentation/services/api-management/) which you can use to publish and manage a web API. Using this facility, you can generate a service that acts a façade for one or more web APIs. The service is itself a scalable web service that you can create and configure by using the Azure Management portal. You can use this service to publish and manage a web API as follows:
+Azure provides the [API Management Service](http://azure.microsoft.com/documentation/services/api-management/) which you can use to publish and manage a web API. Using this facility, you can generate a service that acts a façade for one or more web APIs. The service is itself a scalable web service that you can create and configure by using the Azure Management portal. You can use this service to publish and manage a web API as follows:
 
 1. Deploy the web API to a website, Azure cloud service, or Azure virtual machine.
 
@@ -1084,9 +1084,9 @@ Azure provides the [API Management Service](http://azure.microsoft.com/en-us/doc
 
 6.	Configure policies for each web API. Policies govern aspects such as whether cross-domain calls should be allowed, how to authenticate clients, whether to convert between XML and JSON data formats transparently, whether to restrict calls from a given IP range, usage quotas, and whether to limit the call rate. Policies can be applied globally across the entire product, for a single web API in a product, or for individual operations in a web API.
 
-You can find full details describing how to perform these tasks on the [API Management](http://azure.microsoft.com/en-us/services/api-management/) page on the Microsoft website. The Azure API Management Service also provides its own REST interface, enabling you to build a custom interface for simplifying the process of configuring a web API. For more information, visit the [Azure API Management REST API Reference](https://msdn.microsoft.com/library/azure/dn776326.aspx) page on the Microsoft website.
+You can find full details describing how to perform these tasks on the [API Management](http://azure.microsoft.com/services/api-management/) page on the Microsoft website. The Azure API Management Service also provides its own REST interface, enabling you to build a custom interface for simplifying the process of configuring a web API. For more information, visit the [Azure API Management REST API Reference](https://msdn.microsoft.com/library/azure/dn776326.aspx) page on the Microsoft website.
 
-> **Tip**: Azure provides the Azure Traffic Manager which enables you to implement failover and load-balancing, and reduce latency across multiple instances of a web site hosted in different geographic locations. You can use Azure Traffic Manager in conjunction with the API Management Service; the API Management Service can route requests to instances of a web site through Azure Traffic Manager.  For more information, visit the [About Traffic Manager Load Balancing Methods](https://msdn.microsoft.com/library/azure/dn339010.aspx) page on the Microsoft website.
+> [AZURE.TIP] Azure provides the Azure Traffic Manager which enables you to implement failover and load-balancing, and reduce latency across multiple instances of a web site hosted in different geographic locations. You can use Azure Traffic Manager in conjunction with the API Management Service; the API Management Service can route requests to instances of a web site through Azure Traffic Manager.  For more information, visit the [About Traffic Manager Load Balancing Methods](https://msdn.microsoft.com/library/azure/dn339010.aspx) page on the Microsoft website.
 
 > In this structure, if you are using custom DNS names for your web sites, you should configure the appropriate CNAME record for each web site to point to the DNS name of the Azure Traffic Manager web site.
 
@@ -1136,7 +1136,7 @@ If you have implemented your web API by using the ASP.NET Web API template (eith
 
 You can view this data in real time from the Azure Management portal. You can also create webtests that monitor the health of the web API. A webtest sends a periodic request to a specified URI in the web API and captures the response. You can specify the definition of a successful response (such as HTTP status code 200), and if the request does not return this response you can arrange for an alert to be sent to an administrator. If necessary, the administrator can restart the server hosting the web API if it has failed.
 
-The [Application Insights - Start monitoring your app's health and usage](http://azure.microsoft.com/en-us/documentation/articles/app-insights-start-monitoring-app-health-usage/) page on the Microsoft website provides more information.
+The [Application Insights - Start monitoring your app's health and usage](http://azure.microsoft.com/documentation/articles/app-insights-start-monitoring-app-health-usage/) page on the Microsoft website provides more information.
 
 ### Monitoring a web API through the API Management Service
 
@@ -1168,11 +1168,11 @@ You can use this information to determine whether a particular web API or operat
 - The [Status Code Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html) page on the W3C website contains a full list of HTTP status codes and their descriptions.
 - For detailed information on handling HTTP exceptions with the ASP.NET Web API, visit the [Exception Handling in ASP.NET Web API](http://www.asp.net/web-api/overview/error-handling/exception-handling) page on the Microsoft website.
 - The article [Web API Global Error Handling](http://www.asp.net/web-api/overview/error-handling/web-api-global-error-handling) on the Microsoft website describes how to implement a global error handling and logging strategy for a web API.
-- The page [Use WebJobs to run background tasks in Microsoft Azure Websites](http://azure.microsoft.com/en-us/documentation/articles/web-sites-create-web-jobs/) on the Microsoft website provides information and examples on using WebJobs to perform background operations on an Azure Website.
-- The page [Azure Notification Hubs Notify Users](http://azure.microsoft.com/en-us/documentation/articles/notification-hubs-aspnet-backend-windows-dotnet-notify-users/) on the Microsoft website shows how you can use an Azure Notification Hub to push asynchronous responses to client applications.
-- The [API Management](http://azure.microsoft.com/en-us/services/api-management/) page on the Microsoft website describes how to publish a product that provides controlled and secure access to a web API.
+- The page [Use WebJobs to run background tasks in Microsoft Azure Websites](http://azure.microsoft.com/documentation/articles/web-sites-create-web-jobs/) on the Microsoft website provides information and examples on using WebJobs to perform background operations on an Azure Website.
+- The page [Azure Notification Hubs Notify Users](http://azure.microsoft.com/documentation/articles/notification-hubs-aspnet-backend-windows-dotnet-notify-users/) on the Microsoft website shows how you can use an Azure Notification Hub to push asynchronous responses to client applications.
+- The [API Management](http://azure.microsoft.com/services/api-management/) page on the Microsoft website describes how to publish a product that provides controlled and secure access to a web API.
 - The [Azure API Management REST API Reference](https://msdn.microsoft.com/library/azure/dn776326.aspx) page on the Microsoft website describes how to use the API Management REST API to build custom management applications.
 - The [About Traffic Manager Load Balancing Methods](https://msdn.microsoft.com/library/azure/dn339010.aspx) page on the Microsoft website summarizes how Azure Traffic Manager can be used to load-balance requests across multiple instances of a website hosting a web API.
-- The [Application Insights - Start monitoring your app's health and usage](http://azure.microsoft.com/en-us/documentation/articles/app-insights-start-monitoring-app-health-usage/) page on the Microsoft website provides detailed information on installing and configuring Application Insights in an ASP.NET Web API project.
+- The [Application Insights - Start monitoring your app's health and usage](http://azure.microsoft.com/documentation/articles/app-insights-start-monitoring-app-health-usage/) page on the Microsoft website provides detailed information on installing and configuring Application Insights in an ASP.NET Web API project.
 - The page [Verifying Code by Using Unit Tests](https://msdn.microsoft.com/library/dd264975.aspx) on the Microsoft website provides detailed information on creating and managing unit tests by using Visual Studio.
 - The page [Run performance tests on an application before a release](https://msdn.microsoft.com/library/dn250793.aspx) on the Microsoft website describes how to use Visual Studio Ultimate to create a web performance and load test project.

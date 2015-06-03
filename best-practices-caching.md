@@ -32,7 +32,7 @@ the original data store is slow relative to the speed of the cache, is
 subject to a high level of contention, or is far away when network latency
 can cause access to be slow.
 
-# Caching in distributed applications
+## Caching in distributed applications
 
 Distributed applications typically implement either or both of the
 following strategies when caching data:
@@ -45,7 +45,7 @@ the user interface for a system, such as a web browser or desktop application),
 and/or server-side (by the process providing the business services
 running remotely).
 
-## Private caching
+### Private caching
 
 The most basic type of cache is an in-memory store, held in the address
 space of a single process and accessed directly by the code that runs
@@ -72,7 +72,7 @@ instances could return different results, as shown in Figure 1.
 
 _Figure 1: Using an in-memory cache in different instances of an application_
 
-## Shared Caching
+### Shared Caching
 
 Using a shared cache can help to alleviate the concern that data may
 differ in each cache, as can occur with in-memory caching. Shared
@@ -98,12 +98,12 @@ is slower to access because it is no longer held locally to each
 application instance, and the requirement to implement a separate
 cache service may add complexity to the solution.
 
-# Considerations for using caching
+## Considerations for using caching
 
 The following sections describe in more detail the considerations
 for designing and using a cache.
 
-## When should data be cached?
+### When should data be cached?
 
 Caching can dramatically improve performance, scalability, and availability. The more data
 that you have and the larger the number of users that need to access this data, the greater
@@ -123,7 +123,7 @@ persistent data store. In this way, if the cache is unavailable, your applicatio
 still continue to operate by using the data store and you will not lose important
 information.
 
-## Types of data and cache population strategies
+### Types of data and cache population strategies
 
 The key to using a cache effectively lies in determining the most appropriate data to
 cache, and caching it at the appropriate time. The data may be added to the cache on
@@ -184,7 +184,7 @@ valuable data only in the cache, but make sure that you maintain the information
 in the original data store as well. In this way, if the cache should become
 unavailable, you minimize the chance of losing data.
 
-## Caching highly dynamic data
+### Caching highly dynamic data
 
 Storing information that changes rapidly in a persistent data store can impose
 an overhead on the system. For example, consider a device that continually reports
@@ -197,7 +197,7 @@ information directly in the cache instead of the persistent data store. If the
 data is non-critical and does not require to be audited, then it does not matter
 if the occasional change is lost.
 
-## Managing data expiration in a cache
+### Managing data expiration in a cache
 
 In most cases, data held in a cache is a copy of the data held in the original data
 store. The data in the original data store might change after it was cached, causing
@@ -214,7 +214,7 @@ as a sliding value that causes the item to be removed from cache if it is not
 accessed within the specified time. This setting overrides any cache-wide
 expiration policy, but only for the specified objects.
 
-> __Note:__ Consider the expiration period for the cache and the objects that it contains carefully. If you make it too short, objects will expire too quickly and you will reduce the benefits of using the cache. If you make the period too long, you risk the data becoming stale.
+> [AZURE.NOTE] Consider the expiration period for the cache and the objects that it contains carefully. If you make it too short, objects will expire too quickly and you will reduce the benefits of using the cache. If you make the period too long, you risk the data becoming stale.
 
 It is also possible that the cache might fill up if data is allowed to remain
 resident for a long time. In this case, any requests to add new items to the
@@ -231,7 +231,7 @@ data will not be required again), first-in-first-out policy (oldest data is
 evicted first), or explicit removal based on a triggered event (such as the
 data being modified).
 
-## Invalidating data in a client-side cache
+### Invalidating data in a client-side cache
 
 Data held in a client-side cache is generally considered to be outside of
 the auspices of the service providing the data to the client; a service
@@ -265,7 +265,7 @@ you can adopt one of two approaches to concurrency:
 - __Optimistic.__ The application checks to see whether the data in the cache has changed since it was retrieved, immediately prior to updating it. If the data is still the same, the change can be made. Otherwise, the application has to decide whether to update it (the business logic that drives this decision will be application-specific). This approach is suitable for situations where updates are infrequent, or where collisions are unlikely to occur.
 - __Pessimistic.__ The application locks the data in the cache when it retrieves it to prevent another instance from changing the data. This process ensures that collisions cannot occur, but could block other instances that need to process the same data. Pessimistic concurrency can affect the scalability of the solution and should be used only for short-lived operations. This approach may be appropriate for situations where collisions are more likely, especially if an application updates multiple items in the cache and must ensure that these changes are applied consistently.
 
-## Implementing high availability, and scalability, and improving performance
+### Implementing high availability, and scalability, and improving performance
 
 A cache should not be the primary repository of data; this is the role
 of the original data store from which the cache is populated. The
@@ -365,7 +365,7 @@ old value.
 For more information about handling data consistency, see the
 Data Consistency Guidance page on the Microsoft website.
 
-## Protecting cached data
+### Protecting cached data
 
 Irrespective of the cache service you use, you should consider
 how to protect the data held in the cache from unauthorized
@@ -406,7 +406,7 @@ take any additional steps. If the cache is located remotely and
 requires a TCP or HTTP connection over a public network (such
 as the Internet), you should consider implementing SSL.
 
-# Considerations for implementing caching with Microsoft Azure
+## Considerations for implementing caching with Microsoft Azure
 
 Azure provides the Azure Redis Cache. This is an implementation
 of the open source Redis Cache that runs as a service in an
@@ -430,7 +430,7 @@ applications that already use Redis running on-premises, the
 Azure Redis cache provides a quick migration path to caching
 in the cloud.
 
-> __Note:__ Azure also provides the Managed Cache Service. This
+> [AZURE.NOTE] Azure also provides the Managed Cache Service. This
   service is based on the Microsoft AppFabric Cache engine. It
   enables you to create a distributed cache that can be shared
   by loosely-coupled applications. The cache is hosted on
@@ -468,7 +468,7 @@ provides.
 
 Redis supports both reading and writing operations. Unlike many caches (which should be considered as transitory data stores), writes can be protected from system failure either by being stored in periodically in a local snapshot file or in an append-only log file. All writes are asynchronous and do not block clients reading and writing data. When Redis starts running, it reads the data from the snapshot or log file and uses it to construct the in-memory cache. For more information, see [Redis Persistence](http://redis.io/topics/persistence) on the Redis website.
 
-> __Note:__ Redis does not guarantee that all writes will be saved in the event
+> [AZURE.NOTE] Redis does not guarantee that all writes will be saved in the event
   of a catastrophic failure, but at worst you should only lose a few-seconds
   worth of data. Remember that a cache is not intended to act as an
   authoritative data source, and it is the responsibility of the applications
@@ -485,7 +485,7 @@ Redis supports master/subordinate replication to help ensure availability and ma
 
 Redis also provides clustering, enabling you to transparently partition data into shards across servers and spread the load. This feature improves scalability as new Redis servers can be added and the data repartitioned as the size of the cache increases. Furthermore, each server in the cluster can be replicated by using master/subordinate replication to ensure availability across each node in the cluster. For more information about clustering and sharding, visit the [Redis Cluster Tutorial page](http://redis.io/topics/cluster-tutorial) on the Redis website.
 
-> __Note:__ Azure Redis Cache does not currently support clustering. If you wish to create a Redis cluster you can build your own custom Redis server. For more information, see the section Building a Custom Redis Cache later in this document.
+> [AZURE.NOTE] Azure Redis Cache does not currently support clustering. If you wish to create a Redis cluster you can build your own custom Redis server. For more information, see the section Building a Custom Redis Cache later in this document.
 
 ### Redis memory use
 
@@ -509,7 +509,7 @@ Redis does not directly support any form of data encryption, so all encoding mus
 
 For more information, visit the [Redis Security](http://redis.io/topics/security) page on the Redis website.
 
-> __Note:__ Azure Redis Cache provides its own security layer through which clients connect; the underlying Redis
+> [AZURE.NOTE] Azure Redis Cache provides its own security layer through which clients connect; the underlying Redis
   servers are not exposed to the public network.
 
 ### Using the Azure Redis cache
@@ -524,7 +524,7 @@ The Azure management portal includes a convenient graphical display that enables
 
 You can also monitor CPU, memory, and network usage for the cache.
 
-> __Note:__ Azure Redis Cache is intended to act purely as a cache rather than a database. As a result, it does not currently implement Redis persistence.
+> [AZURE.NOTE] Azure Redis Cache is intended to act purely as a cache rather than a database. As a result, it does not currently implement Redis persistence.
 
 For further information and examples showing how to create and configure an Azure Redis Cache, visit the page [Lap around Azure Redis Cache](http://azure.microsoft.com/blog/2014/06/04/lap-around-azure-redis-cache-preview/) on the Azure blog.
 
@@ -540,7 +540,7 @@ Using the Session State Provider with Azure Redis Cache delivers several benefit
 
 For more information visit the [ASP.NET Session State Provider for Azure Redis Cache](http://msdn.microsoft.com/library/azure/dn690522.aspx) page on the Microsoft website.
 
-> __Note:__ Do not use the Session State Provider for Azure Redis Cache for ASP.NET applications that run outside of the Azure environment. The latency of accessing the cache from outside of Azure can eliminate the performance benefits of caching data.
+> [AZURE.NOTE] Do not use the Session State Provider for Azure Redis Cache for ASP.NET applications that run outside of the Azure environment. The latency of accessing the cache from outside of Azure can eliminate the performance benefits of caching data.
 
 Similarly, the Output Cache Provider for Azure Redis Cache enables you to save the HTTP responses generated by an ASP.NET web application. Using the Output Cache Provider with Azure Redis Cache can improve the response times of applications that render complex HTML output; application instances generating similar responses can make use of the shared output fragments in the cache rather than generating this HTML output afresh.  For more information visit the [ASP.NET Output Cache Provider for Azure Redis Cache](http://msdn.microsoft.com/library/azure/dn798898.aspx) page on the Microsoft website.
 
@@ -573,7 +573,7 @@ To implement partitioning in a Redis cache, you can adopt one of the following a
   is transparent to client applications, and additional Redis servers can be added to the cluster
   (and the data re-partitioned) without requiring that you reconfigure the clients.
 
-  > __Important:__ Azure Redis Cache does not currently support Redis clustering. If you wish to
+  > [AZURE.IMPORTANT] Azure Redis Cache does not currently support Redis clustering. If you wish to
   implement this approach then you should build a custom Redis cache as described earlier.
 
 - _Client-side partitioning._ In this model, the client application contains logic (possibly in
@@ -593,7 +593,7 @@ To implement partitioning in a Redis cache, you can adopt one of the following a
 The page [Partitioning: how to split data among multiple Redis instances](http://redis.io/topics/partitioning)
 on the Redis website provides further information about implementing partitioning with Redis.
 
-## Implementing Redis cache client applications
+### Implementing Redis cache client applications
 
 Redis supports client applications written in numerous programming languages. If you are building new applications by using the .NET Framework, the recommended approach is to use the StackExchange.Redis client library. This library provides a .NET Framework object model that abstracts the details for connecting to a Redis server, sending commands, and receiving responses. It is available in Visual Studio as a NuGet package. You can use this same library to connect to an Azure Redis cache, or a custom Redis cache hosted on a VM.
 
@@ -745,7 +745,7 @@ Apart from one-dimensional binary strings, a value in a Redis key/value pair can
 
 This section summarizes some common use-cases for these data types and commands.
 
-## Performing atomic and batch operations
+### Performing atomic and batch operations
 
 Redis supports a series of atomic get-and-set operations on string values. These operations remove the possible race hazards that might occur when using separate `GET` and `SET` commands. The operations available include:
 
@@ -848,7 +848,7 @@ Console.WriteLine("{0}", t2.Result);
 
 It is important to understand that unlike a transaction, if a command in a batch fails because it is malformed the other commands may still run; the IBatch.Execute method does not return any indication of success or failure.
 
-## Performing fire-and-forget cache operations
+### Performing fire-and-forget cache operations
 
 Redis supports fire-and-forget operations by using command flags. In this situation, the client simply initiates an operation but has no interest in the result and does not wait for the command to be completed. The example below shows how to perform the INCR command as a fire-and-forget operation:
 
@@ -861,7 +861,7 @@ await cache.StringSetAsync("data:key1", 99);
 cache.StringIncrement("data:key1", flags: CommandFlags.FireAndForget);
 ```
 
-## Automatically expiring keys
+### Automatically expiring keys
 
 When you store an item in a Redis cache, you can specify a timeout after which the item will be automatically removed from the cache. You can also query how much more time a key has before it expires by using the `TTL` command; this command is available to StackExchange applications by using the IDatabase.KeyTimeToLive method.
 
@@ -894,7 +894,7 @@ await cache.KeyExpireAsync("data:key1",
 
 > _Tip:_ You can manually remove an item from the cache by using the DEL command, which is available through the StackExchange library as the IDatabase.KeyDeleteAsync method.
 
-## Using tags to cross-correlate cached items
+### Using tags to cross-correlate cached items
 
 A Redis set is a collection of multiple items that share a single key. You can create a set by using the SADD command. You can retrieve the items in a set by using the SMEMBERS command. The StackExchange library implements the SADD command through the IDatabase.SetAddAsync method, and the SMEMBERS command with the IDatabase.SetMembersAsync method. You can also combine existing sets to create new sets by using the SDIFF (set difference), SINTER (set intersection), and SUNION (set union) commands. The StackExchange library unifies these operations in the IDatabase.SetCombineAsync method; the first parameter to this method specifies the set operation to perform.
 
@@ -988,7 +988,7 @@ foreach (var value in await cache.SetMembersAsync("tag:iot:blog:posts"))
 }
 ```
 
-## Finding recently accessed items
+### Finding recently accessed items
 
 A common problem required by many applications is to find the most recently accessed items. For example, a blogging site might want to display information about the most recently read blog posts. You can implement this functionality by using a Redis list. A Redis list contains multiple items that share the same key, but the list acts as a double-ended queue. You can push items on to either end of the list by using the LPUSH (left push) and RPUSH (right push) commands. You can retrieve items from either end of the list by using the LPOP and RPOP commands.  You can also return a set of elements by using the LRANGE and RRANGE commands. The code snippets below show how you can perform these operations by using the StackExchange library. This code uses the BlogPost type from the previous examples. As a blog post is read by a user, the title of the blog post is pushed onto a list associated with the key "blog:recent_posts" in the Redis cache by using the IDatabase.ListLeftPushAsync method:
 
@@ -1020,7 +1020,7 @@ To prevent the list from growing indefinitely, you can periodically cull items b
 await cache.ListTrimAsync(redisKey, 0, 5);
 ```
 
-## Implementing a leader board
+### Implementing a leader board
 
 By default the items in a set are not held in any specific order. You can create an ordered set by using the ZADD command (the IDatabase.SortedSetAdd method in the StackExchange library). The items are ordered by using a numeric value called a score provided as a parameter to the command. The following code snippet adds the title of a blog post to an ordered list. In the example, each blog post also has a score field that contains the ranking of the blog post.
 
@@ -1042,7 +1042,7 @@ foreach (var post in await cache.SortedSetRangeByRankWithScoresAsync(redisKey))
 }
 ```
 
-> __Note:__ The StackExchange library also provides the IDatabase.SortedSetRangeByRankAsync method which returns the data in score order, but does not return the scores.
+> [AZURE.NOTE] The StackExchange library also provides the IDatabase.SortedSetRangeByRankAsync method which returns the data in score order, but does not return the scores.
 
 You can also retrieve items in descending order of scores, and limit the number of items returned by providing additional parameters to the IDatabase.SortedSetRangeByRankWithScoresAsync method. The next example displays the titles and scores of the top 10 ranked blog posts:
 
@@ -1065,7 +1065,7 @@ foreach (var post in await cache.SortedSetRangeByScoreWithScoresAsync(
 }
 ```
 
-## Messaging by using channels
+### Messaging by using channels
 
 Apart from acting as a data cache, a Redis server provides messaging through a high-performance publisher/subscriber mechanism. Client applications can subscribe to a channel, and other applications or services can publish messages to the channel. Subscribing applications will then receive these messages and can process them.
 
@@ -1110,17 +1110,17 @@ There are several points you should understand about the publish/subscribe mecha
   ISubscriber subscriber = redisHostConnection.GetSubscriber();
   ```
 
-# Related Patterns and Guidance
+## Related Patterns and Guidance
 
 The following pattern may also be relevant to your scenario when implementing caching in your applications:
 
 - [Cache-Aside Pattern](http://msdn.microsoft.com/library/dn589799.aspx): This pattern describes how to load data on-demand into a cache from a data store. This pattern also helps to maintain consistency between data held in the cache and the data in the original data store.
 - The [Sharding Pattern](http://msdn.microsoft.com/library/dn589797.aspx) provides information on implementing horizontal partitioning to help improve scalability when storing and accessing large volumes of data.
 
-# More Information
+## More Information
 
 - The [MemoryCache Class](http://msdn.microsoft.com/library/system.runtime.caching.memorycache.aspx) page on the Microsoft website.
-- The [Microsoft Azure Cache](http://msdn.microsoft.com/en-us/library/windowsazure/gg278356.aspx) page on the Microsoft website.
+- The [Microsoft Azure Cache](http://msdn.microsoft.com/library/windowsazure/gg278356.aspx) page on the Microsoft website.
 - The [Which Azure Cache offering is right for me?](http://msdn.microsoft.com/library/azure/dn766201.aspx) page on the Microsoft website.
 - The [Configuration Model](http://msdn.microsoft.com/library/windowsazure/hh914149.aspx) page on the Microsoft website.
 - The [Task-based Asynchronous Pattern](http://msdn.microsoft.com/library/hh873175.aspx) page on the Microsoft website.

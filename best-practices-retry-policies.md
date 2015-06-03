@@ -32,7 +32,7 @@ The Patterns & Practices `TransientFaultHandling` code is recommended for genera
 Install-Package EnterpriseLibrary.WindowsAzure.TransientFaultHandling
 ```
 
-# Configuration
+## Configuration
 
 Section includes the configuration information for the retry feature:
 
@@ -73,9 +73,9 @@ Configuration file:
 </RetryPolicyConfiguration>
 ```
 
-# Policies
+## Policies
 
-## Exponential
+### Exponential
 
 Used for spacing out repeated attempts of service invocations exponentially to avoid service throttling.
 
@@ -153,7 +153,7 @@ Based on error code / metadata passed by service in response header
 
 __Circuit Break:__
 
-Based on [Circuit Breaker](http://msdn.microsoft.com/en-us/library/dn589784.aspx)
+Based on [Circuit Breaker](http://msdn.microsoft.com/library/dn589784.aspx)
 
 # Extensibility
 
@@ -178,7 +178,7 @@ public interface IRetryPolicy
 }
 ```
 
-# Telemetry
+## Telemetry
 
 Log retries as ETW events using an EventSource. Here are the fields that should be logged for every retry attempt
 
